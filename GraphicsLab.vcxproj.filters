@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources\Shaders">
+      <UniqueIdentifier>{dbe0f77e-ae67-401c-a72d-25c5303ba9fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers de ressources\Meshes">
+      <UniqueIdentifier>{f5686030-6b74-4de5-8e09-bf8943591fb7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shader.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Meshes\blender_tryout.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\monkeyhead_smooth.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\tree.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\turtle.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\ground.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\turtle_body.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\turtle_left_arm.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\turtle_left_leg.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\turtle_right_arm.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\turtle_right_leg.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Shaders\simpleFragmentShader.txt">
+      <Filter>Fichiers de ressources\Shaders</Filter>
+    </Text>
+    <Text Include="Shaders\simpleVertexShader.txt">
+      <Filter>Fichiers de ressources\Shaders</Filter>
+    </Text>
+    <Text Include="Shaders\groundFragmentShader.txt">
+      <Filter>Fichiers de ressources\Shaders</Filter>
+    </Text>
+    <Text Include="Shaders\groundVertexShader.txt">
+      <Filter>Fichiers de ressources\Shaders</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
