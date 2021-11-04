@@ -37,6 +37,21 @@ void Shader::SetUniformMat4(string uniformName, mat4 value) const {
 	glUniformMatrix4fv(gLocation, 1, GL_FALSE, value_ptr(value));
 }
 
+void Shader::SetUniformVec3(string uniformName, vec3 value) const {
+	GLint gLocation = GetUniformLocation(uniformName);
+	glUniform3fv(gLocation, 1, value_ptr(value));
+}
+
+void Shader::SetUniformVec4(string uniformName, vec4 value) const {
+	GLint gLocation = GetUniformLocation(uniformName);
+	glUniform4fv(gLocation, 1, value_ptr(value));
+}
+
+void Shader::SetUniformFloat(string uniformName, float value) const {
+	GLint gLocation = GetUniformLocation(uniformName);
+	glUniform1f(gLocation, value);
+}
+
 // Private methods
 char* Shader::readShaderFile(const char* path) {
 	FILE* fp;

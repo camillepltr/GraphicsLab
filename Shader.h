@@ -30,6 +30,9 @@ public:
     GLuint GetID();
     GLint GetUniformLocation(string uniformName) const;
     void SetUniformMat4(string uniformName, mat4 value) const;
+    void SetUniformVec3(string uniformName, vec3 value) const;
+    void SetUniformVec4(string uniformName, vec4 value) const;
+    void SetUniformFloat(string uniformName, float value) const;
 
     // Constructors
     Shader(); // Default constructor

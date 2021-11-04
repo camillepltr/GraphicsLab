@@ -52,6 +52,9 @@ Camera camera;
 // Projection
 bool perpective_proj = true;
 
+// Light source
+vec4 light_source_position = vec4(10.0, 10.0, -10.0, 1.0);;
+
 
 void updateModels(float delta) {
 	// Translations
@@ -192,6 +195,10 @@ void display(){
 	ground_shader.SetUniformMat4("view", view);
 	ground_shader.SetUniformMat4("proj", proj);
 	ground_shader.SetUniformMat4("model", ground_model);
+	turtle_shader.SetUniformVec3("object_color", vec3(0.66, 0.66, 0.66));
+	turtle_shader.SetUniformVec4("light_position", light_source_position);
+	turtle_shader.SetUniformVec3("view_position", camera.GetPosition());
+	turtle_shader.SetUniformFloat("specular_coeff", 200.0);
 
 	glDrawArrays(GL_TRIANGLES, 0, ground.GetMeshData().mPointCount);
 
@@ -199,6 +206,10 @@ void display(){
 	turtle_shader.Use();
 	turtle_shader.SetUniformMat4("view", view);
 	turtle_shader.SetUniformMat4("proj", proj);
+	turtle_shader.SetUniformVec3("object_color", vec3(0.5,0.5,0.0));
+	turtle_shader.SetUniformVec4("light_position", light_source_position);
+	turtle_shader.SetUniformVec3("view_position", camera.GetPosition());
+	turtle_shader.SetUniformFloat("specular_coeff", 100.0);
 
 	// Update local turtle_body model
 	glBindVertexArray(turtle_body.GetVao());
@@ -273,7 +284,7 @@ void mouseMove(int x, int y)
 void init()
 {
 	// Ground
-	ground_shader = Shader("../Shaders/groundVertexShader.txt", "../Shaders/groundFragmentShader.txt");
+	ground_shader = Shader("../Shaders/simpleVertexShader.txt", "../Shaders/simpleFragmentShader.txt");
 	ground = Model(GROUND_MESH_NAME, ground_shader.GetID());
 
 	// Turtle
