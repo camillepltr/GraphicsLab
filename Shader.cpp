@@ -52,6 +52,20 @@ void Shader::SetUniformFloat(string uniformName, float value) const {
 	glUniform1f(gLocation, value);
 }
 
+void Shader::SetLight(Light l) const {
+	SetUniformVec3("light.ambient_colour", l.ambient_colour);
+	SetUniformVec3("light.diffuse_colour", l.diffuse_colour);
+	SetUniformVec3("light.specular_colour", l.specular_colour);
+	SetUniformVec3("light.position", l.position);
+}
+
+void Shader::SetMaterial(Material m) const {
+	SetUniformFloat("material.Ka", m.Ka);
+	SetUniformFloat("material.Kd", m.Kd);
+	SetUniformFloat("material.Ks", m.Ks);
+	SetUniformFloat("material.phong_exponent", m.phong_exponent);
+}
+
 // Private methods
 char* Shader::readShaderFile(const char* path) {
 	FILE* fp;

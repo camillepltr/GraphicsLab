@@ -19,6 +19,8 @@
 #include <sstream>
 #include <string>
 
+#include "Struct.h"
+
 using namespace std;
 using namespace glm;
 
@@ -33,6 +35,8 @@ public:
     void SetUniformVec3(string uniformName, vec3 value) const;
     void SetUniformVec4(string uniformName, vec4 value) const;
     void SetUniformFloat(string uniformName, float value) const;
+    void SetLight(Light l) const;
+    void SetMaterial(Material m) const;
 
     // Constructors
     Shader(); // Default constructor

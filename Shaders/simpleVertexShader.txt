@@ -2,15 +2,19 @@
 
 layout (location = 0) in vec3 vertex_position;
 layout (location = 1) in vec3 vertex_normal;
+layout (location = 2) in vec2 vertex_texture;
 
 out vec3 vertex_in_world_space;
 out vec3 tnorm;
+out vec2 text_coord;
 
 uniform mat4 view;
 uniform mat4 proj;
 uniform mat4 model;
 
 void main(){
+	text_coord = vertex_texture;
+
 	vertex_in_world_space = vec3(model * vec4 (vertex_position, 1.0));
 
 	mat4 model_view_matrix = view * model;

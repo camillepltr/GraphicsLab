@@ -22,21 +22,23 @@
 
 #include "Shader.h"
 
-
 // Assimp includes
 #include <assimp/cimport.h> // scene importer
 #include <assimp/scene.h> // collects data
 #include <assimp/postprocess.h> // various extra operations
 
-#pragma region SimpleTypes
+// To load texture image
+#include <../stb/stb_image.h>
+
+using namespace glm;
+
 struct ModelData
 {
     size_t mPointCount = 0;
-    vector<vec3> mVertices;
-    vector<vec3> mNormals;
-    vector<vec2> mTextureCoords;
+    std::vector<glm::vec3> mVertices;
+    std::vector<glm::vec3> mNormals;
+    std::vector<glm::vec2> mTextureCoords;
 };
-#pragma endregion SimpleTypes
 
 class Model
 {

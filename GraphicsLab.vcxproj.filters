@@ -19,6 +19,9 @@
     <Filter Include="Fichiers de ressources\Meshes">
       <UniqueIdentifier>{f5686030-6b74-4de5-8e09-bf8943591fb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers de ressources\Textures">
+      <UniqueIdentifier>{5cb554e4-6064-454e-8d89-0d0a492634f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -33,6 +36,9 @@
     <ClCompile Include="Model.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="Librairies\stb\stb_image.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -42,6 +48,12 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Struct.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Librairies\stb\stb_image.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -61,7 +73,7 @@
     <None Include="Meshes\ground.dae">
       <Filter>Fichiers de ressources\Meshes</Filter>
     </None>
-    <None Include="Meshes\turtle_body.dae">
+    <None Include="Meshes\turtle_shell.dae">
       <Filter>Fichiers de ressources\Meshes</Filter>
     </None>
     <None Include="Meshes\turtle_left_arm.dae">
@@ -84,11 +96,10 @@
     <Text Include="Shaders\simpleVertexShader.txt">
       <Filter>Fichiers de ressources\Shaders</Filter>
     </Text>
-    <Text Include="Shaders\groundFragmentShader.txt">
-      <Filter>Fichiers de ressources\Shaders</Filter>
-    </Text>
-    <Text Include="Shaders\groundVertexShader.txt">
-      <Filter>Fichiers de ressources\Shaders</Filter>
-    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\bin_texture.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>
