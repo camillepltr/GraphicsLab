@@ -150,6 +150,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Turtle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -157,6 +158,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Struct.h" />
+    <ClInclude Include="Turtle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Meshes\blender_tryout.dae" />
@@ -171,8 +173,10 @@
     <None Include="Meshes\turtle_right_leg.dae" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Shaders\fragmentShaderWithTexture.txt" />
     <Text Include="Shaders\simpleVertexShader.txt" />
     <Text Include="Shaders\simpleFragmentShader.txt" />
+    <Text Include="Shaders\vertexShaderWithTexture.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\bin_texture.jpg" />

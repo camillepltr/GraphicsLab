@@ -21,9 +21,11 @@ uniform Light light;
 uniform Material material;
 uniform vec3 object_color;
 uniform vec3 view_position;
+uniform sampler2D texture;
 
 in vec3 vertex_in_world_space;
 in vec3 tnorm;
+in vec2 text_coord;
 
 void main(){
 	// Ambiant
@@ -43,5 +45,5 @@ void main(){
 	vec3 specular = spec * material.Ks * light.specular_colour;
 
 	vec3 result = (ambient + diffuse + specular) * object_color;
-	FragColour = vec4(result, 1.0);
+	FragColour = texture(texture, text_coord) * vec4(result, 1.0);
 }

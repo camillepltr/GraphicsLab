@@ -16,6 +16,7 @@
 
 #include "Shader.h"
 #include "Model.h"
+#include "Turtle.h"
 #include "Camera.h"
 #include "Struct.h"
 
@@ -24,27 +25,19 @@ typedef unsigned long DWORD;
 using namespace std;
 using namespace glm;
 
-#define GROUND_MESH_NAME "../Meshes/ground.dae"
-#define TURTLE_SHELL_MESH_NAME "../Meshes/turtle_shell.dae"
-#define TURTLE_LEFT_ARM_MESH_NAME "../Meshes/turtle_left_arm.dae"
-#define TURTLE_RIGHT_ARM_MESH_NAME "../Meshes/turtle_right_arm.dae"
-#define TURTLE_LEFT_LEG_MESH_NAME "../Meshes/turtle_left_leg.dae"
-#define TURTLE_RIGHT_LEG_MESH_NAME "../Meshes/turtle_right_leg.dae"
-
 int width = 800.0;
 int height = 600.0;
 bool key_states[256];
 
+// Shaders
 Shader ground_shader;
 Shader turtle_shader;
 
+#define GROUND_MESH_NAME "../Meshes/ground.dae"
+
 // Models
 Model ground;
-Model turtle_shell;
-Model turtle_la; // Left arm
-Model turtle_ra; // Right arm
-Model turtle_ll; // Left leg
-Model turtle_rl; // Right leg
+Turtle turtle; // Collection of 5 Model objects for the 5 body parts
 
 // View
 Camera camera;
@@ -57,101 +50,111 @@ Light light;
 
 Material material; // Same for all for now, to adapt (ex : highest phong exponennt for turtle shell)
 
+//Textures : return id when created and store in array ?
+//glActiveTexture(GL_TEXTURE0);
+//glBindTexture(GL_TEXTURE_2D, texture1);
+
 
 void updateModels(float delta) {
 	// Translations
 	if (key_states['e']) {
-		turtle_shell.translation_vec.z -= 10.0f*delta;
+		turtle.shell.translation_vec.z -= 10.0f*delta;
 	}
 	if (key_states['r']) {
-		turtle_shell.translation_vec.z += 10.0f * delta;
+		turtle.shell.translation_vec.z += 10.0f * delta;
 	}
 	if (key_states['t']) {
-		turtle_shell.translation_vec.x -= 10.0f * delta;
+		turtle.shell.translation_vec.x -= 10.0f * delta;
 	}
 	if (key_states['y']) {
-		turtle_shell.translation_vec.x += 10.0f * delta;
+		turtle.shell.translation_vec.x += 10.0f * delta;
+	}
+	if (key_states['9']) {
+		turtle.shell.translation_vec.y -= 10.0f * delta;
+	}
+	if (key_states['0']) {
+		turtle.shell.translation_vec.y += 10.0f * delta;
 	}
 
 
 	// Rotations
 	if (key_states['a']) {
-		turtle_shell.rotation_vec.y -= delta;
+		turtle.shell.rotation_vec.y -= delta;
 	}
 	if (key_states['z']) {
-		turtle_shell.rotation_vec.y += delta;
+		turtle.shell.rotation_vec.y += delta;
 	}
 
 	if (key_states['q']) {
-		if (turtle_la.rotation_vec.y > -0.2) {
-			turtle_la.rotation_vec.y -= delta;
+		if (turtle.la.rotation_vec.y > -0.2) {
+			turtle.la.rotation_vec.y -= delta;
 		}
 	}
 	if (key_states['s']) {
-		if (turtle_la.rotation_vec.y < 0) {
-			turtle_la.rotation_vec.y += delta;
+		if (turtle.la.rotation_vec.y < 0) {
+			turtle.la.rotation_vec.y += delta;
 		}
 	}
 
 	if (key_states['d']) {
-		if (turtle_ra.rotation_vec.y > -0.2) {
-			turtle_ra.rotation_vec.y -= delta;
+		if (turtle.ra.rotation_vec.y > -0.2) {
+			turtle.ra.rotation_vec.y -= delta;
 		}
 	}
 	if (key_states['f']) {
-		if (turtle_ra.rotation_vec.y < 0) {
-			turtle_ra.rotation_vec.y += delta;
+		if (turtle.ra.rotation_vec.y < 0) {
+			turtle.ra.rotation_vec.y += delta;
 		}
 	}
 
 	if (key_states['g']) {
-		if (turtle_ll.rotation_vec.y > -0.2) {
-			turtle_ll.rotation_vec.y -= delta;
+		if (turtle.ll.rotation_vec.y > -0.2) {
+			turtle.ll.rotation_vec.y -= delta;
 		}
 	}
 	if (key_states['h']) {
-		if (turtle_ll.rotation_vec.y < 0) {
-			turtle_ll.rotation_vec.y += delta;
+		if (turtle.ll.rotation_vec.y < 0) {
+			turtle.ll.rotation_vec.y += delta;
 		}
 	}
 
 	if (key_states['j']) {
-		if (turtle_rl.rotation_vec.y > -0.2) {
-			turtle_rl.rotation_vec.y -= delta;
+		if (turtle.rl.rotation_vec.y > -0.2) {
+			turtle.rl.rotation_vec.y -= delta;
 		}
 	}
 	if (key_states['k']) {
-		if (turtle_rl.rotation_vec.y < 0) {
-			turtle_rl.rotation_vec.y += delta;
+		if (turtle.rl.rotation_vec.y < 0) {
+			turtle.rl.rotation_vec.y += delta;
 		}
 	}
 
 	// Uniform scaling
 	if (key_states['1']) {
-		turtle_shell.scale_vec -= vec3(delta, delta, delta);
+		turtle.shell.scale_vec -= vec3(delta, delta, delta);
 	}
 	if (key_states['2']) {
-		turtle_shell.scale_vec += vec3(delta, delta, delta);
+		turtle.shell.scale_vec += vec3(delta, delta, delta);
 	}
 
 	// Non uniform scaling
 	if (key_states['3']) {
-		turtle_shell.scale_vec.x -= delta;
+		turtle.shell.scale_vec.x -= delta;
 	}
 	if (key_states['4']) {
-		turtle_shell.scale_vec.x += delta;
+		turtle.shell.scale_vec.x += delta;
 	}
 	if (key_states['5']) {
-		turtle_shell.scale_vec.y -= delta;
+		turtle.shell.scale_vec.y -= delta;
 	}
 	if (key_states['6']) {
-		turtle_shell.scale_vec.y += delta;
+		turtle.shell.scale_vec.y += delta;
 	}
 	if (key_states['7']) {
-		turtle_shell.scale_vec.x -= delta;
+		turtle.shell.scale_vec.x -= delta;
 	}
 	if (key_states['8']) {
-		turtle_shell.scale_vec.x += delta;
+		turtle.shell.scale_vec.x += delta;
 	}
 }
 
@@ -208,45 +211,47 @@ void display(){
 	turtle_shader.Use();
 	turtle_shader.SetUniformMat4("view", view);
 	turtle_shader.SetUniformMat4("proj", proj);
-	turtle_shader.SetUniformVec3("object_color", vec3(0.5,0.5,0.0));
 	turtle_shader.SetUniformVec3("view_position", camera.GetPosition());
 	turtle_shader.SetLight(light);
 	turtle_shader.SetMaterial(material);
+	turtle_shader.SetUniformVec3("object_color", turtle.shell_colour);
 
-	// Update local turtle_shell model
-	glBindVertexArray(turtle_shell.GetVao());
-	mat4 turtle_shell_model = turtle_shell.GetModelLocalTransformationMatrix();
+	// Update local turtle.shell model
+	glBindVertexArray(turtle.shell.GetVao());
+	mat4 turtle_shell_model = turtle.shell.GetModelLocalTransformationMatrix();
 	turtle_shell_model = ground_model * turtle_shell_model;
 	turtle_shader.SetUniformMat4("model", turtle_shell_model);
-	glDrawArrays(GL_TRIANGLES, 0, turtle_shell.GetMeshData().mPointCount);
+	glDrawArrays(GL_TRIANGLES, 0, turtle.shell.GetMeshData().mPointCount);
 
-	// Update local turtle_la model
-	glBindVertexArray(turtle_la.GetVao());
-	mat4 turtle_la_model = turtle_la.GetModelLocalTransformationMatrix();
+	turtle_shader.SetUniformVec3("object_color", turtle.body_colour);
+
+	// Update local turtle.la model
+	glBindVertexArray(turtle.la.GetVao());
+	mat4 turtle_la_model = turtle.la.GetModelLocalTransformationMatrix();
 	turtle_la_model = ground_model * turtle_shell_model * turtle_la_model;
 	turtle_shader.SetUniformMat4("model", turtle_la_model);
-	glDrawArrays(GL_TRIANGLES, 0, turtle_la.GetMeshData().mPointCount);
+	glDrawArrays(GL_TRIANGLES, 0, turtle.la.GetMeshData().mPointCount);
 
-	// Update local turtle_ra model
-	glBindVertexArray(turtle_ra.GetVao());
-	mat4 turtle_ra_model = turtle_ra.GetModelLocalTransformationMatrix();
+	// Update local turtle.ra model
+	glBindVertexArray(turtle.ra.GetVao());
+	mat4 turtle_ra_model = turtle.ra.GetModelLocalTransformationMatrix();
 	turtle_ra_model = ground_model * turtle_shell_model * turtle_ra_model;
 	turtle_shader.SetUniformMat4("model", turtle_ra_model);
-	glDrawArrays(GL_TRIANGLES, 0, turtle_ra.GetMeshData().mPointCount);
+	glDrawArrays(GL_TRIANGLES, 0, turtle.ra.GetMeshData().mPointCount);
 
-	// Update local turtle_ll model
-	glBindVertexArray(turtle_ll.GetVao());
-	mat4 turtle_ll_model = turtle_ll.GetModelLocalTransformationMatrix();
+	// Update local turtle.ll model
+	glBindVertexArray(turtle.ll.GetVao());
+	mat4 turtle_ll_model = turtle.ll.GetModelLocalTransformationMatrix();
 	turtle_ll_model = ground_model * turtle_shell_model * turtle_ll_model;
 	turtle_shader.SetUniformMat4("model", turtle_ll_model);
-	glDrawArrays(GL_TRIANGLES, 0, turtle_ll.GetMeshData().mPointCount);
+	glDrawArrays(GL_TRIANGLES, 0, turtle.ll.GetMeshData().mPointCount);
 
-	// Update local turtle_rl model
-	glBindVertexArray(turtle_rl.GetVao());
-	mat4 turtle_rl_model = turtle_rl.GetModelLocalTransformationMatrix();
+	// Update local turtle.rl model
+	glBindVertexArray(turtle.rl.GetVao());
+	mat4 turtle_rl_model = turtle.rl.GetModelLocalTransformationMatrix();
 	turtle_rl_model = ground_model * turtle_shell_model * turtle_rl_model;
 	turtle_shader.SetUniformMat4("model", turtle_rl_model);
-	glDrawArrays(GL_TRIANGLES, 0, turtle_rl.GetMeshData().mPointCount);
+	glDrawArrays(GL_TRIANGLES, 0, turtle.rl.GetMeshData().mPointCount);
 
 	glutSwapBuffers();
 }
@@ -290,15 +295,16 @@ void init()
 	ground = Model(GROUND_MESH_NAME, ground_shader.GetID());
 
 	// Turtle
-	turtle_shader = Shader("../Shaders/simpleVertexShader.txt", "../Shaders/simpleFragmentShader.txt");
-	turtle_shell = Model(TURTLE_SHELL_MESH_NAME, turtle_shader.GetID());
-	turtle_la = Model(TURTLE_LEFT_ARM_MESH_NAME, turtle_shader.GetID(), vec3(3.8, 0.0, 3.4), vec3(0.0,0.0,0.0), vec3(1.0,1.0,1.0));
-	turtle_ra = Model(TURTLE_RIGHT_ARM_MESH_NAME, turtle_shader.GetID(), vec3(-3.8, 0.0, 3.4), vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));
-	turtle_ll = Model(TURTLE_LEFT_LEG_MESH_NAME, turtle_shader.GetID(), vec3(2.8, 0.0, -6.0), vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));
-	turtle_rl = Model(TURTLE_RIGHT_LEG_MESH_NAME, turtle_shader.GetID(), vec3(-2.8, 0.0, -6.0), vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));
+	turtle_shader = Shader("../Shaders/vertexShaderWithTexture.txt", "../Shaders/fragmentShaderWithTexture.txt");
+	turtle = Turtle(turtle_shader);
 
 	camera = Camera(width, height, width / 2, height / 2, 100); // View
-	//light = Light(vec3(10.0, 10.0, 4.0));
+	light = Light {
+		vec3(0.5, 0.5, 0.5),
+		vec3(1.0, 1.0, 1.0),
+		vec3(0.5, 0.5, 0.5),
+		vec3(10.0, 10.0, 4.0) // Position
+	};
 }
 
 int main(int argc, char** argv){

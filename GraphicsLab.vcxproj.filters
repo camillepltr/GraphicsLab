@@ -39,6 +39,9 @@
     <ClCompile Include="Librairies\stb\stb_image.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="Turtle.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -54,6 +57,9 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Librairies\stb\stb_image.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Turtle.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -94,6 +100,12 @@
       <Filter>Fichiers de ressources\Shaders</Filter>
     </Text>
     <Text Include="Shaders\simpleVertexShader.txt">
+      <Filter>Fichiers de ressources\Shaders</Filter>
+    </Text>
+    <Text Include="Shaders\fragmentShaderWithTexture.txt">
+      <Filter>Fichiers de ressources\Shaders</Filter>
+    </Text>
+    <Text Include="Shaders\vertexShaderWithTexture.txt">
       <Filter>Fichiers de ressources\Shaders</Filter>
     </Text>
   </ItemGroup>

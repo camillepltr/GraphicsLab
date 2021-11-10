@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "Shader.h"
+#include "Struct.h"
 
 // Assimp includes
 #include <assimp/cimport.h> // scene importer
@@ -32,14 +33,6 @@
 
 using namespace glm;
 
-struct ModelData
-{
-    size_t mPointCount = 0;
-    std::vector<glm::vec3> mVertices;
-    std::vector<glm::vec3> mNormals;
-    std::vector<glm::vec2> mTextureCoords;
-};
-
 class Model
 {
 public:
@@ -50,8 +43,8 @@ public:
 
     // Constructors
     Model();
-    Model(const char* file_name, GLuint shaderProgramID);
-    Model(const char* file_name, GLuint shaderProgramID, vec3 trans, vec3 rot, vec3 scale);
+    Model(const char* file_name, GLuint shaderProgramID, const char* texture_file_name = NULL); // Default initial position/rotation/scale, texture optional
+    Model(const char* file_name, GLuint shaderProgramID, vec3 trans, vec3 rot, vec3 scale, const char* texture_file_name);  // With initial position/rotation/scale, texture optional
 
     // Public methods
     mat4 GetModelLocalTransformationMatrix();
@@ -64,7 +57,7 @@ private:
     GLuint vao;
 
     // Private methods
-    void generateObjectBufferMesh(GLuint shaderProgramID);
+    void generateObjectBufferMesh(GLuint shaderProgramID, const char* texture_file_name = NULL);
     void loadModel(const char* file_name);
 };
 

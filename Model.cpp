@@ -12,14 +12,14 @@
 Model::Model() {
 }
 
-Model::Model(const char* file_name, GLuint shaderProgramID) {
+Model::Model(const char* file_name, GLuint shaderProgramID, const char* texture_file_name) {
 	loadModel(file_name);
-	generateObjectBufferMesh(shaderProgramID);
+	generateObjectBufferMesh(shaderProgramID, texture_file_name);
 }
 
-Model::Model(const char* file_name, GLuint shaderProgramID, vec3 trans, vec3 rot, vec3 scale) {
+Model::Model(const char* file_name, GLuint shaderProgramID, vec3 trans, vec3 rot, vec3 scale, const char* texture_file_name) {
 	loadModel(file_name);
-	generateObjectBufferMesh(shaderProgramID);
+	generateObjectBufferMesh(shaderProgramID, texture_file_name);
 
 	translation_vec = trans;
 	rotation_vec = rot;
@@ -96,7 +96,7 @@ void Model::loadModel(const char* file_name) {
 	aiReleaseImport(scene);
 }
 
-void Model::generateObjectBufferMesh(GLuint shaderProgramID) {
+void Model::generateObjectBufferMesh(GLuint shaderProgramID, const char* texture_file_name) {
 	/*----------------------------------------------------------------------------
 	LOAD MESH HERE AND COPY INTO BUFFERS
 	----------------------------------------------------------------------------*/
@@ -108,21 +108,17 @@ void Model::generateObjectBufferMesh(GLuint shaderProgramID) {
 	GLuint loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 	GLuint loc3 = glGetAttribLocation(shaderProgramID, "vertex_texture");
 
+	// Vertices
 	GLuint vp_vbo = 0;
 	glGenBuffers(1, &vp_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vp_vbo);
 	glBufferData(GL_ARRAY_BUFFER, mesh_data.mPointCount * sizeof(vec3), &mesh_data.mVertices[0], GL_STATIC_DRAW);
 
+	// Normals
 	GLuint vn_vbo = 0;
 	glGenBuffers(1, &vn_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
 	glBufferData(GL_ARRAY_BUFFER, mesh_data.mPointCount * sizeof(vec3), &mesh_data.mNormals[0], GL_STATIC_DRAW);
-
-	//	This is for texture coordinates which you don't currently need, so I have commented it out
-	//	unsigned int vt_vbo = 0;
-	//	glGenBuffers (1, &vt_vbo);
-	//	glBindBuffer (GL_ARRAY_BUFFER, vt_vbo);
-	//	glBufferData (GL_ARRAY_BUFFER, monkey_head_data.mTextureCoords * sizeof (vec2), &monkey_head_data.mTextureCoords[0], GL_STATIC_DRAW);
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -134,34 +130,39 @@ void Model::generateObjectBufferMesh(GLuint shaderProgramID) {
 	glBindBuffer(GL_ARRAY_BUFFER, vn_vbo);
 	glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load and generate the texture
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("../Textures/bin_texture.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
 
-	glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-	glEnableVertexAttribArray(loc3);
+	// Texture
+	if (texture_file_name != NULL) {
+		unsigned int vt_vbo = 0;
+		glGenBuffers (1, &vt_vbo);
+		glBindBuffer (GL_ARRAY_BUFFER, vt_vbo);
+		glBufferData (GL_ARRAY_BUFFER, mesh_data.mPointCount * sizeof (vec2), &mesh_data.mTextureCoords[0], GL_STATIC_DRAW);
 
-	//	This is for texture coordinates which you don't currently need, so I have commented it out
-	//glEnableVertexAttribArray (loc3);
-	//glBindBuffer (GL_ARRAY_BUFFER, vt_vbo);
-	//glVertexAttribPointer (loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);*/
+		unsigned int texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		// set the texture wrapping/filtering options (on the currently bound texture object)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// load and generate the texture
+		int width, height, nrChannels;
+		unsigned char* data = stbi_load(texture_file_name, &width, &height, &nrChannels, 0);
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else
+		{
+			std::cout << "Failed to load texture" << std::endl;
+		}
+		stbi_image_free(data);
+
+		glVertexAttribPointer(loc3, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+		glEnableVertexAttribArray(loc3);
+		glBindBuffer (GL_ARRAY_BUFFER, texture);
+	}
 }
 
