@@ -50,11 +50,13 @@ public:
     mat4 GetModelLocalTransformationMatrix();
     ModelData GetMeshData();
     GLuint GetVao();
+    GLuint GetTexture();
 
 private:
     // Private attributes
     ModelData mesh_data;
     GLuint vao;
+    GLuint texture;
 
     // Private methods
     void generateObjectBufferMesh(GLuint shaderProgramID, const char* texture_file_name = NULL);

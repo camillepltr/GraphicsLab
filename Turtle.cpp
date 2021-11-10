@@ -11,6 +11,6 @@ Turtle::Turtle(Shader shader) {
 	rl = Model(TURTLE_RIGHT_LEG_MESH_NAME, shader.GetID(), vec3(-2.8, 0.0, -6.0), vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0), "../Textures/skin_texture.jpg");
 
 	//Initialize shell and body colour
-	shell_colour = vec3(0.4, 0.2 , 0.0);
-	body_colour = vec3(1.0, 1.0, 0.0);
+	shell_colour = vec3(0.9, 0.5 , 0.0);
+	body_colour = vec3(0.9, 0.9, 0.0);
 }

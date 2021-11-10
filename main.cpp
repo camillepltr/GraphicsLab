@@ -214,7 +214,9 @@ void display(){
 	turtle_shader.SetUniformVec3("view_position", camera.GetPosition());
 	turtle_shader.SetLight(light);
 	turtle_shader.SetMaterial(material);
+
 	turtle_shader.SetUniformVec3("object_color", turtle.shell_colour);
+	glBindTexture(GL_TEXTURE_2D, turtle.shell.GetTexture());
 
 	// Update local turtle.shell model
 	glBindVertexArray(turtle.shell.GetVao());
@@ -224,6 +226,7 @@ void display(){
 	glDrawArrays(GL_TRIANGLES, 0, turtle.shell.GetMeshData().mPointCount);
 
 	turtle_shader.SetUniformVec3("object_color", turtle.body_colour);
+	glBindTexture(GL_TEXTURE_2D, turtle.la.GetTexture());
 
 	// Update local turtle.la model
 	glBindVertexArray(turtle.la.GetVao());

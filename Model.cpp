@@ -46,6 +46,10 @@ GLuint Model::GetVao() {
 	return vao;
 }
 
+GLuint Model::GetTexture() {
+	return texture;
+}
+
 // Private methods 
 void Model::loadModel(const char* file_name) {
 	/* Use assimp to read the model file, forcing it to be read as    */
@@ -138,7 +142,6 @@ void Model::generateObjectBufferMesh(GLuint shaderProgramID, const char* texture
 		glBindBuffer (GL_ARRAY_BUFFER, vt_vbo);
 		glBufferData (GL_ARRAY_BUFFER, mesh_data.mPointCount * sizeof (vec2), &mesh_data.mTextureCoords[0], GL_STATIC_DRAW);
 
-		unsigned int texture;
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		// set the texture wrapping/filtering options (on the currently bound texture object)
