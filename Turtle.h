@@ -39,6 +39,10 @@ public:
 	// Constructors
 	Turtle(); 
 	Turtle(Shader shader);
+	Turtle(const Turtle &t);
+
+	// Public methods
+	void Draw(Shader turtle_shader, mat4 ground_model);
 };
 
 #endif
