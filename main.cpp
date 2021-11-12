@@ -37,8 +37,8 @@ Shader turtle_shader;
 
 // Models
 Model ground;
-Turtle* turtles[5]; // Turtle = collection of 5 Model objects for the 5 body parts; Array = for crowd
-
+Turtle** turtles; // Turtle = collection of 5 Model objects for the 5 body parts; Array = for crowd
+int crowd_size;
 
 // View
 Camera camera;
@@ -231,6 +231,9 @@ void updateScene() {
 
 	camera.UpdateCamera(key_states, delta); //View
 	updateModels(delta); // Update model transformation variables
+	for (int i = 0; i < crowd_size; i++) {
+		turtles[i]->MoveToNextBoidPosition(turtles, crowd_size, delta);
+	}
 	updateProjection(); //If switch between ortho/perspective
 
 	// Draw the next frame
@@ -258,13 +261,19 @@ void init()
 
 	// Turtle
 	turtle_shader = Shader("../Shaders/vertexShaderWithTexture.txt", "../Shaders/fragmentShaderWithTexture.txt");
+	crowd_size = 6;
+	turtles = new Turtle * [crowd_size];
 	turtles[0] = new Turtle(turtle_shader);
 
-	for (int i = 1; i < 5; i++) {
-		// Make copies of the first turtle and put them in a different location
+	for (int i = 1; i < crowd_size; i++) {
+		// Make copies of the first turtle (boid) and put them in a different location
 		turtles[i] = new Turtle(*turtles[0]);
-		turtles[i]->shell.translation_vec.x += 20.0*i;
+		// Using translation vector for position (= origin (0,0,0) + translation defined by translation_vector)
+		turtles[i]->shell.translation_vec.x += rand() % 200 - 100;
+		turtles[i]->shell.translation_vec.z += rand() % 200 - 100;
 	}
+
+
 
 	camera = Camera(width, height, width / 2, height / 2, 100); // View
 	light = Light {

@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="crowd_functions.cpp" />
     <ClCompile Include="Librairies\stb\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="crowd_functions.h" />
     <ClInclude Include="Librairies\stb\stb_image.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
