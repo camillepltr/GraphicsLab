@@ -1,5 +1,6 @@
 #include "Turtle.h"
 
+//Constructors 
 Turtle::Turtle() {}
 
 Turtle::Turtle(Shader shader) {
@@ -12,8 +13,8 @@ Turtle::Turtle(Shader shader) {
 	head = Model(TURTLE_HEAD_MESH_NAME, shader.GetID(), "../Textures/skin_texture.jpg");
 
 	//Initialize shell and body colour
-	shell_colour = vec3(0.9, 0.5 , 0.0);
-	body_colour = vec3(0.9, 0.9, 0.0);
+	shell_colour = vec4(0.9, 0.5 , 0.0, 1.0);
+	body_colour = vec4(0.9, 0.9, 0.0, 1.0);
 
 	// For crowds : A Turtle = a boid
 	position = &shell.translation_vec;
@@ -34,47 +35,12 @@ Turtle::Turtle(const Turtle& t) {
 	velocity = vec3((float)(rand() % 100) / (float)(rand() % 100 + 5000), 0.0, (float)(rand() % 100) / (float)(rand() % 100 + 5000));
 }
 
-vec3 Turtle::Separation(Turtle** crowd, int n) {
-	vec3 res = vec3(0, 0, 0);
-	for (int i = 0; i < n; i++) {
-		if ((crowd[i] != this) && (distance(*crowd[i]->position, *position) < MAX_DISTANCE_BETWEEN_BOIDS)) {
-			res -= (*crowd[i]->position - *position);
-		}
-	}
-	return res;
-}
-
-vec3 Turtle::Cohesion(Turtle** crowd, int n) {
-	vec3 centroid = vec3(0.0, 0.0, 0.0);
-	for (int i = 0; i < n; i++) {
-		if ((crowd[i] != this)) {
-			centroid += *crowd[i]->position;
-		}
-	}
-	centroid /= (float)(n - 1);
-
-	// Add portion of the average velocity to the boid's velocity
-	vec3 res = 0.1f * (centroid - *position);
-	return res;
-}
-
-vec3 Turtle::Alignment (Turtle** crowd, int n) {
-	vec3 average = vec3(0.0, 0.0, 0.0);
-	for (int i = 0; i < n; i++) {
-		if ((crowd[i] != this)) {
-			average += crowd[i]->velocity;
-		}
-	}
-	average /= (float)(n - 1);
-
-	// Move position 2% ? towards the centroid
-	vec3 res = 0.05f * (average - velocity);
-	return res;
-}
+// Other public methods
 void Turtle::MoveToNextBoidPosition(Turtle** crowd, int n, float delta) {
-	vec3 v1 = Separation(crowd, n);
-	vec3 v2 = Cohesion(crowd, n);
-	vec3 v3 = Alignment(crowd, n);
+	vec3 initial = *position;
+	vec3 v1 = separation(crowd, n);
+	vec3 v2 = cohesion(crowd, n);
+	vec3 v3 = alignment(crowd, n);
 	velocity += v1 + v2 + v3;
 	// Check if not above max speed
 	if (length(velocity) > MAX_SPEED) {
@@ -82,12 +48,15 @@ void Turtle::MoveToNextBoidPosition(Turtle** crowd, int n, float delta) {
 		velocity *= MAX_SPEED;
 	}
 	*position += velocity * delta;
+
+	// Rotate around y axis (as turtle move on (x,z) plane, in the direction of the velocit
+	shell.rotation_vec.y += direction(initial, *position) * delta;
 }
 
 void Turtle::Draw(Shader turtle_shader, mat4 ground_model) {
 
 
-	turtle_shader.SetUniformVec3("object_color", shell_colour);
+	turtle_shader.SetUniformVec4("object_color", shell_colour);
 	glBindTexture(GL_TEXTURE_2D, shell.GetTexture());
 
 	glBindVertexArray(shell.GetVao());
@@ -98,7 +67,7 @@ void Turtle::Draw(Shader turtle_shader, mat4 ground_model) {
 	turtle_shader.SetUniformMat4("model", turtle_shell_model);
 	glDrawArrays(GL_TRIANGLES, 0, shell.GetMeshData().mPointCount);
 
-	turtle_shader.SetUniformVec3("object_color", body_colour);
+	turtle_shader.SetUniformVec4("object_color", body_colour);
 	glBindTexture(GL_TEXTURE_2D, la.GetTexture());
 
 	// Update local la model
@@ -135,4 +104,83 @@ void Turtle::Draw(Shader turtle_shader, mat4 ground_model) {
 	turtle_head_model = ground_model * turtle_shell_model * turtle_head_model;
 	turtle_shader.SetUniformMat4("model", turtle_head_model);
 	glDrawArrays(GL_TRIANGLES, 0, head.GetMeshData().mPointCount);
+}
+
+// Private methods
+vec3 Turtle::separation(Turtle** crowd, int n) {
+	vec3 res = vec3(0, 0, 0);
+	for (int i = 0; i < n; i++) {
+		if ((crowd[i] != this) && (distance(*crowd[i]->position, *position) < MAX_DISTANCE_BETWEEN_BOIDS)) {
+			res -= (*crowd[i]->position - *position);
+		}
+	}
+	return res;
+}
+
+vec3 Turtle::cohesion(Turtle** crowd, int n) {
+	int N = 0;
+	vec3 centroid = vec3(0.0, 0.0, 0.0);
+
+	for (int i = 0; i < n; i++) {
+		if ((crowd[i] != this) && isInVisualRange(crowd[i])) {
+			centroid += *crowd[i]->position;
+			N++;
+		}
+	}
+
+	if (!N) {
+		return vec3(0.0, 0.0, 0.0);
+	}
+	else {
+		centroid /= (float)N;
+		// Add portion of the average velocity to the boid's velocity
+		vec3 res = 0.1f * (centroid - *position);
+		return res;
+	}
+}
+
+vec3 Turtle::alignment(Turtle** crowd, int n) {
+	int N = 0;
+	vec3 average = vec3(0.0, 0.0, 0.0);
+
+	for (int i = 0; i < n; i++) {
+		if ((crowd[i] != this) && isInVisualRange(crowd[i])) {
+			average += crowd[i]->velocity;
+			N++;
+		}
+	}
+
+	if (!N) {
+		return vec3(0.0, 0.0, 0.0);
+	}
+	else {
+		average /= (float)N;
+		// Move position 2% ? towards the centroid
+		vec3 res = 0.05f * (average - velocity);
+		return res;
+	}
+}
+
+bool Turtle::isInVisualRange(Turtle* t) {
+	return (distance(*position, *t->position) < VISUAL_RANGE);
+}
+
+int Turtle::direction(vec3 v1, vec3 v2) {
+	float cos = (float)dot(v1, v2) / (float)(length(v1) * length(v2));
+	if (cos == 1) {
+		//Same direction : dont turn
+		return 0;
+	}
+	else if (cos == -1) {
+		// Opposite direction : doesn't matter, lets say turn in positive direction
+		return 1;
+	}
+	// Else Return sign of cross product
+	vec3 cross_p = cross(v1, v2);
+	if (cross_p.y > 0) {
+		return 1;
+	}
+	else {
+		return -1;
+	}
 }

@@ -25,18 +25,19 @@ typedef unsigned long DWORD;
 using namespace std;
 using namespace glm;
 
-int width = 800.0;
-int height = 600.0;
+int width = 1000.0;
+int height = 750.0;
 bool key_states[256];
 
 // Shaders
-Shader ground_shader;
-Shader turtle_shader;
+Shader shader_with_texture;
 
-#define GROUND_MESH_NAME "../Meshes/ground.dae"
+#define GROUND_MESH_NAME "../Meshes/island.dae"
+#define SEA_MESH_NAME "../Meshes/sea.dae"
 
 // Models
 Model ground;
+Model sea;
 Turtle** turtles; // Turtle = collection of 5 Model objects for the 5 body parts; Array = for crowd
 int crowd_size;
 
@@ -46,8 +47,9 @@ Camera camera;
 // Projection
 bool perpective_proj = true;
 
-// Light source
+// Light sources
 Light light;
+Light orange_light;
 
 Material material; // Same for all for now, to adapt (ex : highest phong exponennt for turtle shell)
 
@@ -77,6 +79,7 @@ void updateModels(float delta) {
 	// Rotations
 	if (key_states['a']) {
 		turtles[0]->shell.rotation_vec.y -= delta;
+		cout << turtles[0]->shell.rotation_vec.y << endl;
 	}
 	if (key_states['z']) {
 		turtles[0]->shell.rotation_vec.y += delta;
@@ -165,7 +168,7 @@ void updateProjection() {
 mat4 computeProjectionMatrix(){
 	mat4 proj = mat4(1.0f);
 	if (perpective_proj) {
-		proj = perspective(45.0f, (float)width / (float)height, 0.1f, 100.0f);
+		proj = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
 	}
 	else {
 		proj = ortho(0.0, 10.0, 0.0, 10.0, 0.1, 100.0);
@@ -181,39 +184,44 @@ void display(){
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// For transparency (alpha blending)
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glViewport(0, 0, width, height);
 
 	// View and projection (common to models)
 	mat4 view = lookAt(camera.GetPosition(), camera.GetPosition() + camera.GetFront(), camera.GetUp());
 	mat4 proj = computeProjectionMatrix();
 
+	shader_with_texture.Use();
+	shader_with_texture.SetUniformMat4("view", view);
+	shader_with_texture.SetUniformMat4("proj", proj);
+	shader_with_texture.SetLight("light1", light);
+	shader_with_texture.SetLight("light2", orange_light);
+	shader_with_texture.SetMaterial(material);
+	shader_with_texture.SetUniformVec3("view_position", camera.GetPosition());
+
 	// GROUND
-	ground_shader.Use();
 	glBindVertexArray(ground.GetVao());
-
-	// Ground model
 	mat4 ground_model = ground.GetModelLocalTransformationMatrix(); //mat4 M = T * R * S;
-
-	ground_shader.SetUniformMat4("view", view);
-	ground_shader.SetUniformMat4("proj", proj);
-	ground_shader.SetUniformMat4("model", ground_model);
-	ground_shader.SetUniformVec3("object_color", vec3(0.66, 0.66, 0.66));
-	ground_shader.SetUniformVec3("view_position", camera.GetPosition());
-	ground_shader.SetLight(light);
-	ground_shader.SetMaterial(material);
-
+	shader_with_texture.SetUniformMat4("model", ground_model);
+	shader_with_texture.SetUniformVec4("object_color", vec4(1.0, 1.0, 1.0, 1.0));
+	glBindTexture(GL_TEXTURE_2D, ground.GetTexture());
 	glDrawArrays(GL_TRIANGLES, 0, ground.GetMeshData().mPointCount);
 
 	// TURTLES
-	turtle_shader.Use();
-	turtle_shader.SetUniformMat4("view", view);
-	turtle_shader.SetUniformMat4("proj", proj);
-	turtle_shader.SetUniformVec3("view_position", camera.GetPosition());
-	turtle_shader.SetLight(light);
-	turtle_shader.SetMaterial(material);
-	for(int i = 0; i < 5; i++) {
-		turtles[i]->Draw(turtle_shader, ground_model);
+	for(int i = 0; i < crowd_size; i++) {
+		turtles[i]->Draw(shader_with_texture, ground_model);
 	}
+
+	// SEA
+	glBindVertexArray(sea.GetVao());
+	mat4 sea_model = sea.GetModelLocalTransformationMatrix();
+	shader_with_texture.SetUniformMat4("model", sea_model);
+	shader_with_texture.SetUniformVec4("object_color", vec4(1.0, 1.0, 1.0, 0.8));
+	glBindTexture(GL_TEXTURE_2D, sea.GetTexture());
+	glDrawArrays(GL_TRIANGLES, 0, sea.GetMeshData().mPointCount);
 
 	glutSwapBuffers();
 }
@@ -255,22 +263,25 @@ void mouseMove(int x, int y)
 
 void init()
 {
-	// Ground
-	ground_shader = Shader("../Shaders/simpleVertexShader.txt", "../Shaders/simpleFragmentShader.txt");
-	ground = Model(GROUND_MESH_NAME, ground_shader.GetID());
+	shader_with_texture = Shader("../Shaders/vertexShaderWithTexture.txt", "../Shaders/fragmentShaderWithTexture2Lights.txt");
 
-	// Turtle
-	turtle_shader = Shader("../Shaders/vertexShaderWithTexture.txt", "../Shaders/fragmentShaderWithTexture.txt");
-	crowd_size = 6;
+	// Ground
+	ground = Model(GROUND_MESH_NAME, shader_with_texture.GetID(), "../Textures/sand_texture.jpg");
+
+	// Sea
+	sea = Model(SEA_MESH_NAME, shader_with_texture.GetID(), "../Textures/sea_texture.jpg");
+
+	// Turtles
+	crowd_size = 12;
 	turtles = new Turtle * [crowd_size];
-	turtles[0] = new Turtle(turtle_shader);
+	turtles[0] = new Turtle(shader_with_texture);
 
 	for (int i = 1; i < crowd_size; i++) {
 		// Make copies of the first turtle (boid) and put them in a different location
 		turtles[i] = new Turtle(*turtles[0]);
 		// Using translation vector for position (= origin (0,0,0) + translation defined by translation_vector)
-		turtles[i]->shell.translation_vec.x += rand() % 200 - 100;
-		turtles[i]->shell.translation_vec.z += rand() % 200 - 100;
+		turtles[i]->shell.translation_vec.x += rand() % 500 - 250;
+		turtles[i]->shell.translation_vec.z += rand() % 500 - 250;
 	}
 
 
@@ -281,6 +292,12 @@ void init()
 		vec3(1.0, 1.0, 1.0),
 		vec3(0.5, 0.5, 0.5),
 		vec3(10.0, 10.0, 4.0) // Position
+	};
+	orange_light = Light{
+		vec3(0.5, 0.25, 0.1),
+		vec3(1.0, 0.5, 0.2),
+		vec3(1.0, 0.5, 0.2),
+		vec3(-10.0, 10.0, 4.0) // Position
 	};
 }
 

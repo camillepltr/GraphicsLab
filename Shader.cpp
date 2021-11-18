@@ -52,11 +52,11 @@ void Shader::SetUniformFloat(string uniformName, float value) const {
 	glUniform1f(gLocation, value);
 }
 
-void Shader::SetLight(Light l) const {
-	SetUniformVec3("light.ambient_colour", l.ambient_colour);
-	SetUniformVec3("light.diffuse_colour", l.diffuse_colour);
-	SetUniformVec3("light.specular_colour", l.specular_colour);
-	SetUniformVec3("light.position", l.position);
+void Shader::SetLight(string uniformName, Light l) const {
+	SetUniformVec3(uniformName + ".ambient_colour", l.ambient_colour);
+	SetUniformVec3(uniformName + ".diffuse_colour", l.diffuse_colour);
+	SetUniformVec3(uniformName + ".specular_colour", l.specular_colour);
+	SetUniformVec3(uniformName + ".position", l.position);
 }
 
 void Shader::SetMaterial(Material m) const {

@@ -29,7 +29,7 @@ public:
 private:
 	// Attributes 
 	// Default vuew transformation variables
-	vec3 camera_pos = vec3(0.0f, 0.0f, 50.0f);
+	vec3 camera_pos = vec3(0.0f, 20.0f, 50.0f);
 	vec3 camera_front = vec3(0.0f, 0.0f, -1.0f);
 	vec3 camera_up = vec3(0.0f, 1.0f, 0.0f);
 

@@ -27,6 +27,8 @@ using namespace glm;
 
 #define MAX_SPEED 2.0
 #define MAX_DISTANCE_BETWEEN_BOIDS 25
+#define VISUAL_RANGE 200
+#define PI 3.141592635
 
 class Turtle
 {
@@ -38,8 +40,8 @@ public:
 	Model ra = Model(); // Right arm
 	Model ll = Model(); // Left leg
 	Model rl = Model(); // Right leg
-	vec3 shell_colour = vec3(0.5, 0.5, 0.0);
-	vec3 body_colour = vec3(0.4, 0.2, 0.0);
+	vec4 shell_colour = vec4(0.5, 0.5, 0.0, 1.0);
+	vec4 body_colour = vec4(0.4, 0.2, 0.0, 1.0);
 
 	vec3* position;
 	vec3 velocity;
@@ -52,10 +54,15 @@ public:
 	// Public methods
 	void Draw(Shader turtle_shader, mat4 ground_model);
 		// For boids
-	vec3 Separation(Turtle** crowd, int n); // Reynold rule 1 : Seperation
-	vec3 Alignment(Turtle** crowd, int n); // Reynold rule 2 : Alignment
-	vec3 Cohesion(Turtle** crowd, int n); // Reynold rule 3 : Cohesion
 	void MoveToNextBoidPosition(Turtle** crowd, int n, float delta);
+private:
+	// Private mathods
+		// For boids
+	vec3 separation(Turtle** crowd, int n); // Reynold rule 1 : Seperation
+	vec3 alignment(Turtle** crowd, int n); // Reynold rule 2 : Alignment
+	vec3 cohesion(Turtle** crowd, int n); // Reynold rule 3 : Cohesion
+	bool isInVisualRange(Turtle* t);
+	int direction(vec3 v1, vec3 v2);
 };
 
 #endif
