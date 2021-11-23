@@ -30,28 +30,26 @@ int width = 1000.0;
 int height = 750.0;
 bool key_states[256];
 
-
-GLuint vao;
-Shader shader_programme;
-GLuint tex_cube;
 // Shaders
 Shader shader_with_texture;
-//Shader skybox_shader;
+Shader skybox_shader;
 
 #define GROUND_MESH_NAME "../Meshes/island.dae"
 #define SEA_MESH_NAME "../Meshes/sea.dae"
-vector<string> FACES_TEXTURE_NAMES = 
+vector<const char*> FACES_TEXTURE_NAMES = 
 {
-	"../Textures/Skybox/right.jpg",
-	"../Textures/Skybox/left.jpg",
+	"../Textures/Skybox/front.jpg",
+	"../Textures/Skybox/back.jpg",
 	"../Textures/Skybox/top.jpg",
 	"../Textures/Skybox/bottom.jpg",
-	"../Textures/Skybox/front.jpg",
-	"../Textures/Skybox/back.jpg"
+	"../Textures/Skybox/left.jpg",
+	"../Textures/Skybox/right.jpg"
 };
 
+// Skybox
+Skybox skybox;
+
 // Models
-//Skybox skybox;
 Model ground;
 Model sea;
 Turtle** turtles; // Turtle = collection of 5 Model objects for the 5 body parts; Array = for crowd
@@ -196,7 +194,7 @@ void display(){
 
 	// tell GL to only draw onto a pixel if the shape is closer to the viewer
 	glEnable(GL_DEPTH_TEST); 
-	//glEnable(GL_TEXTURE_CUBE_MAP);
+	glEnable(GL_TEXTURE_CUBE_MAP);
 	glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -242,26 +240,14 @@ void display(){
 	glDrawArrays(GL_TRIANGLES, 0, sea.GetMeshData().mPointCount);
 
 	// Skybox
-	//glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-	//skybox_shader.Use();
-	//view = mat4(mat3(view)); // Remove translation from the view matrix
-	//skybox_shader.SetUniformMat4("view", view);
-	//skybox_shader.SetUniformMat4("proj", proj);
-	//glBindVertexArray(skybox.GetSkyboxVAO());
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetSkyboxTexture());
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
-	//glBindVertexArray(0);
-	//glDepthFunc(GL_LESS); // set depth function back to default
-
-
 	glDepthMask(GL_FALSE);
-	shader_programme.Use();
-	shader_programme.SetUniformMat4("view", view);
-	shader_programme.SetUniformMat4("proj", proj);
+	skybox_shader.Use();
+	view = mat4(mat3(view)); // Remove the translation part so that it always seems far away (= skybox always centerd around viewer)
+	skybox_shader.SetUniformMat4("view", view);
+	skybox_shader.SetUniformMat4("proj", proj);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, tex_cube);
-	glBindVertexArray(vao);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetSkyboxTexture());
+	glBindVertexArray(skybox.GetSkyboxVAO());
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glDepthMask(GL_TRUE);
 
@@ -303,138 +289,14 @@ void mouseMove(int x, int y)
 	camera.MouseMove(x, y);
 }
 
-bool load_cube_map_side(
-	GLuint texture, GLenum side_target, const char* file_name) {
-	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
-
-	int x, y, n;
-	int force_channels = 4;
-	unsigned char* image_data = stbi_load(
-		file_name, &x, &y, &n, force_channels);
-	if (!image_data) {
-		fprintf(stderr, "ERROR: could not load %s\n", file_name);
-		return false;
-	}
-	// non-power-of-2 dimensions check
-	if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) {
-		fprintf(stderr,
-			"WARNING: image %s is not power-of-2 dimensions\n",
-			file_name);
-	}
-
-	// copy image data into 'target' side of cube map
-	glTexImage2D(
-		side_target,
-		0,
-		GL_RGBA,
-		x,
-		y,
-		0,
-		GL_RGBA,
-		GL_UNSIGNED_BYTE,
-		image_data);
-	free(image_data);
-	return true;
-}
-
-void create_cube_map(
-	const char* front,
-	const char* back,
-	const char* top,
-	const char* bottom,
-	const char* left,
-	const char* right,
-	GLuint* tex_cube) {
-	// generate a cube-map texture to hold all the sides
-	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(1, tex_cube);
-
-	// load each image and copy into a side of the cube-map texture
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, front);
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, back);
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, top);
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, bottom);
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, left);
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_X, right);
-	// format cube map texture
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-}
-
 void init()
 {
-	float points[] = {
-  -500.0f,  500.0f, -500.0f,
-  -500.0f, -500.0f, -500.0f,
-   500.0f, -500.0f, -500.0f,
-   500.0f, -500.0f, -500.0f,
-   500.0f,  500.0f, -500.0f,
-  -500.0f,  500.0f, -500.0f,
-
-  -500.0f, -500.0f,  500.0f,
-  -500.0f, -500.0f, -500.0f,
-  -500.0f,  500.0f, -500.0f,
-  -500.0f,  500.0f, -500.0f,
-  -500.0f,  500.0f,  500.0f,
-  -500.0f, -500.0f,  500.0f,
-
-   500.0f, -500.0f, -500.0f,
-   500.0f, -500.0f,  500.0f,
-   500.0f,  500.0f,  500.0f,
-   500.0f,  500.0f,  500.0f,
-   500.0f,  500.0f, -500.0f,
-   500.0f, -500.0f, -500.0f,
-
-  -500.0f, -500.0f,  500.0f,
-  -500.0f,  500.0f,  500.0f,
-   500.0f,  500.0f,  500.0f,
-   500.0f,  500.0f,  500.0f,
-   500.0f, -500.0f,  500.0f,
-  -500.0f, -500.0f,  500.0f,
-
-  -500.0f,  500.0f, -500.0f,
-   500.0f,  500.0f, -500.0f,
-   500.0f,  500.0f,  500.0f,
-   500.0f,  500.0f,  500.0f,
-  -500.0f,  500.0f,  500.0f,
-  -500.0f,  500.0f, -500.0f,
-
-  -500.0f, -500.0f, -500.0f,
-  -500.0f, -500.0f,  500.0f,
-   500.0f, -500.0f, -500.0f,
-   500.0f, -500.0f, -500.0f,
-  -500.0f, -500.0f,  500.0f,
-   500.0f, -500.0f,  500.0f
-	};
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 3 * 36 * sizeof(float), &points, GL_STATIC_DRAW);
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-	shader_programme = Shader("../Shaders/skyboxVertexShader.txt", "../Shaders/skyboxFragmentShader.txt");
-	create_cube_map("../Textures/Skybox/right.jpg",
-		"../Textures/Skybox/left.jpg",
-		"../Textures/Skybox/top.jpg",
-		"../Textures/Skybox/bottom.jpg",
-		"../Textures/Skybox/front.jpg",
-		"../Textures/Skybox/back.jpg", 
-		&tex_cube);
-
+	// SHaders
 	shader_with_texture = Shader("../Shaders/vertexShaderWithTexture.txt", "../Shaders/fragmentShaderWithTexture2Lights.txt");
-	//skybox_shader = Shader("../Shaders/skyboxVertexShader.txt", "../Shaders/skyboxFragmentShader.txt");
+	skybox_shader = Shader("../Shaders/skyboxVertexShader.txt", "../Shaders/skyboxFragmentShader.txt");
 
-	//// Skybox
-	//skybox = Skybox(FACES_TEXTURE_NAMES, skybox_shader.GetID());
-	//skybox_shader.Use();
-	//skybox_shader.SetUniformInt("skybox", 0);
+	// Skybox 
+	skybox = Skybox(FACES_TEXTURE_NAMES, skybox_shader.GetID(), 550);
 
 	// Ground
 	ground = Model(GROUND_MESH_NAME, shader_with_texture.GetID(), "../Textures/sand_texture.jpg");
@@ -479,7 +341,7 @@ int main(int argc, char** argv){
 	glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB);
     glutInitWindowSize(width, height);
-    glutCreateWindow("Midterm assignment");
+    glutCreateWindow("Computer Graphics project");
 	// Tell glut where the display function is
 	glutDisplayFunc(display);
 	glutIdleFunc(updateScene);
