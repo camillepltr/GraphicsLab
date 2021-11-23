@@ -50,6 +50,19 @@ GLuint Model::GetTexture() {
 	return texture;
 }
 
+Material Model::GetMaterial() {
+	return material;
+}
+
+void Model::SetMaterial(float Ka, float Kd, float Ks, float n) {
+	material = Material{
+		Ka,
+		Kd,
+		Ks,
+		n
+	};
+}
+
 // Private methods 
 void Model::loadModel(const char* file_name) {
 	/* Use assimp to read the model file, forcing it to be read as    */
@@ -159,7 +172,7 @@ void Model::generateObjectBufferMesh(GLuint shaderProgramID, const char* texture
 		}
 		else
 		{
-			std::cout << "Failed to load texture" << std::endl;
+			cout << "Failed to load texture" << endl;
 		}
 		stbi_image_free(data);
 

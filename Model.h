@@ -51,12 +51,15 @@ public:
     ModelData GetMeshData();
     GLuint GetVao();
     GLuint GetTexture();
+    Material GetMaterial();
+    void SetMaterial(float Ka, float Kd, float Ks, float n);
 
 private:
     // Private attributes
     ModelData mesh_data;
     GLuint vao;
     GLuint texture;
+    Material material;
 
     // Private methods
     void generateObjectBufferMesh(GLuint shaderProgramID, const char* texture_file_name = NULL);

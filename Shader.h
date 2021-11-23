@@ -35,6 +35,7 @@ public:
     void SetUniformVec3(string uniformName, vec3 value) const;
     void SetUniformVec4(string uniformName, vec4 value) const;
     void SetUniformFloat(string uniformName, float value) const;
+    void SetUniformInt(string uniformName, int value) const;
     void SetLight(string uniformName, Light l) const;
     void SetMaterial(Material m) const;
 

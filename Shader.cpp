@@ -52,6 +52,11 @@ void Shader::SetUniformFloat(string uniformName, float value) const {
 	glUniform1f(gLocation, value);
 }
 
+void Shader::SetUniformInt(string uniformName, int value) const {
+	GLint gLocation = GetUniformLocation(uniformName);
+	glUniform1i(gLocation, value);
+}
+
 void Shader::SetLight(string uniformName, Light l) const {
 	SetUniformVec3(uniformName + ".ambient_colour", l.ambient_colour);
 	SetUniformVec3(uniformName + ".diffuse_colour", l.diffuse_colour);

@@ -150,6 +150,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Turtle.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +158,7 @@
     <ClInclude Include="Librairies\stb\stb_image.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Struct.h" />
     <ClInclude Include="Turtle.h" />
   </ItemGroup>
@@ -177,6 +179,8 @@
     <Text Include="Shaders\fragmentShaderWithTexture2Lights.txt" />
     <Text Include="Shaders\simpleVertexShader.txt" />
     <Text Include="Shaders\simpleFragmentShader.txt" />
+    <Text Include="Shaders\skyboxFragmentShader.txt" />
+    <Text Include="Shaders\skyboxVertexShader.txt" />
     <Text Include="Shaders\vertexShaderWithTexture.txt" />
   </ItemGroup>
   <ItemGroup>
