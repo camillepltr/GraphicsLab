@@ -1,3 +1,13 @@
+/*******************************************************************************************
+	Computer Graphics - TCD
+	Camille Peltier (peltierc@tcd.ie)
+	2021
+	-------------------
+	Turtle.cpp
+	A turtle = collection of 6 models (shell + five body parts).
+	This class also contains methods for crowd animation using boids (a turtle = a boid)
+********************************************************************************************/
+
 #include "Turtle.h"
 
 //Constructors 

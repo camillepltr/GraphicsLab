@@ -1,3 +1,11 @@
+/*******************************************************************************************
+	Computer Graphics - TCD
+	Camille Peltier (peltierc@tcd.ie)
+	2021
+	-------------------
+	Camera.h
+	Class to set, store and update camera properties
+********************************************************************************************/
 #pragma once
 
 #ifndef CAMERA_H

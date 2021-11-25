@@ -1,3 +1,12 @@
+/*******************************************************************************************
+	Computer Graphics - TCD
+	Camille Peltier (peltierc@tcd.ie)
+	2021
+	-------------------
+	Struct.h
+	Various struc used in the project
+********************************************************************************************/
+
 #pragma once
 #include <glm/glm.hpp>
 #include <vector>

@@ -1,3 +1,12 @@
+/*******************************************************************************************
+    Computer Graphics - TCD
+    Camille Peltier (peltierc@tcd.ie)
+    2021
+    -------------------
+    Skybox.cpp
+    Class to load and store data for skybox
+********************************************************************************************/
+
 #include "Skybox.h"
 
 Skybox::Skybox() {}

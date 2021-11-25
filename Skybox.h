@@ -1,3 +1,12 @@
+/*******************************************************************************************
+    Computer Graphics - TCD
+    Camille Peltier (peltierc@tcd.ie)
+    2021
+    -------------------
+    Skybx.h
+    Class to load and store data for skybox
+********************************************************************************************/
+
 #pragma once
 #ifndef SKYBOX_H
 #define SKYBOX_H

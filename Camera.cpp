@@ -1,3 +1,11 @@
+/*******************************************************************************************
+	Computer Graphics - TCD
+	Camille Peltier (peltierc@tcd.ie)
+	2021
+	-------------------
+	Camera.cpp
+	Class to set, store and update camera properties
+********************************************************************************************/
 #include "Camera.h"
 
 // Constructors

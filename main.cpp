@@ -1,5 +1,11 @@
+/*******************************************************************************************
+	Computer Graphics - TCD
+	Camille Peltier (peltierc@tcd.ie)
+	2021
+	-------------------
+	main.cpp
+********************************************************************************************/
 
-//Some Windows Headers (For Time, IO, etc.)
 #include <windows.h>
 #include <mmsystem.h>
 
@@ -33,12 +39,11 @@ bool animation = true;
 
 // Shaders
 Shader shader_with_texture;
-Shader sea_shader;
 Shader skybox_shader;
 
-#define GROUND_MESH_NAME "../Meshes/island.dae"
-#define SEA_MESH_NAME "../Meshes/sea.dae"
-vector<const char*> FACES_TEXTURE_NAMES = 
+// Skybox
+Skybox skybox;
+vector<const char*> FACES_TEXTURE_NAMES =
 {
 	"../Textures/Skybox/front.jpg",
 	"../Textures/Skybox/back.jpg",
@@ -48,13 +53,12 @@ vector<const char*> FACES_TEXTURE_NAMES =
 	"../Textures/Skybox/right.jpg"
 };
 
-// Skybox
-Skybox skybox;
-
 // Models
 Model ground;
+#define GROUND_MESH_NAME "../Meshes/island.dae"
 Model sea;
-Turtle** turtles; // Turtle = collection of 5 Model objects for the 5 body parts; Array = for crowd
+#define SEA_MESH_NAME "../Meshes/sea.dae"
+Turtle** turtles; // Array of turtles = crowd
 int crowd_size;
 
 // View
@@ -66,9 +70,6 @@ bool perpective_proj = true;
 // Light sources
 Light light;
 Light orange_light;
-
-Material material; // Same for all for now, to adapt (ex : highest phong exponennt for turtle shell)
-
 
 //Mostly used for mid-term
 void updateModels(float delta) {
@@ -281,7 +282,7 @@ void updateScene() {
 	if (animation) {
 		for (int i = 0; i < crowd_size; i++) {
 			turtles[i]->MoveToNextBoidPosition(turtles, crowd_size, delta);
-			turtles[i]->MoveLegs(curr_time); //Just for animation
+			turtles[i]->MoveBodyParts(curr_time); //Just for animation
 		}
 		sea.translation_vec.y += delta;;
 	}
