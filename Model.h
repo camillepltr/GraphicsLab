@@ -54,7 +54,7 @@ public:
     Material GetMaterial();
     void SetMaterial(float Ka, float Kd, float Ks, float n);
 
-private:
+protected:
     // Private attributes
     ModelData mesh_data;
     GLuint vao;

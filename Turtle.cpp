@@ -40,10 +40,14 @@ Turtle::Turtle(const Turtle& t) {
 // Other public methods
 void Turtle::MoveToNextBoidPosition(Turtle** crowd, int n, float delta) {
 	vec3 initial = *position;
+	// 3 rules
 	vec3 v1 = separation(crowd, n);
 	vec3 v2 = cohesion(crowd, n);
 	vec3 v3 = alignment(crowd, n);
-	velocity += v1 + v2 + v3;
+	// Additional 
+	vec3 v4 = seekPlace(vec3(-800.0 + rand() % 40, 0.0, rand() % 100));
+
+	velocity += v1 + v2 + v3 + v4;
 	// Check if not above max speed
 	if (length(velocity) > MAX_SPEED) {
 		velocity /= length(velocity);
@@ -52,7 +56,15 @@ void Turtle::MoveToNextBoidPosition(Turtle** crowd, int n, float delta) {
 	*position += velocity * delta;
 
 	// Rotate around y axis (as turtle move on (x,z) plane, in the direction of the velocit
-	shell.rotation_vec.y += direction(initial, *position) * delta;
+	//shell.rotation_vec.y += direction(initial, *position) * delta;
+}
+
+void Turtle::MoveBodyParts(float t) {
+	la.rotation_vec.y = (sin(t*0.002f) - 2) / 10;
+	ra.rotation_vec.y = (sin(t * 0.002f + PI) - 2) / 10;
+	ll.rotation_vec.y = (cos(t * 0.004f + PI) - 2) / 10;
+	rl.rotation_vec.y = (cos(t * 0.004f) - 2) / 10;
+	head.rotation_vec.x = (cos(t * 0.001f) - 2) / 20;
 }
 
 void Turtle::Draw(Shader turtle_shader, mat4 ground_model) {
@@ -165,19 +177,26 @@ vec3 Turtle::alignment(Turtle** crowd, int n) {
 	}
 }
 
+vec3 Turtle::seekPlace(vec3 target) {
+	vec3 res = target - *position;
+	res *= 0.8; //Limit the weight 
+	return res;
+}
+
 bool Turtle::isInVisualRange(Turtle* t) {
 	return (distance(*position, *t->position) < VISUAL_RANGE);
 }
 
 int Turtle::direction(vec3 v1, vec3 v2) {
-	float cos = (float)dot(v1, v2) / (float)(length(v1) * length(v2));
+	float cos = (float)dot(v1, v2);
+	cout << cos << endl;
 	if (cos == 1) {
 		//Same direction : dont turn
 		return 0;
 	}
 	else if (cos == -1) {
 		// Opposite direction : doesn't matter, lets say turn in positive direction
-		return 1;
+		return 0;
 	}
 	// Else Return sign of cross product
 	vec3 cross_p = cross(v1, v2);

@@ -1,0 +1,45 @@
+#version 330 core
+
+layout (location = 0) in vec3 vertex_position;
+layout (location = 1) in vec3 vertex_normal;
+layout (location = 2) in vec2 vertex_texture;
+
+out vec3 vertex_in_world_space;
+out vec3 tnorm;
+out vec2 text_coord;
+
+uniform mat4 view;
+uniform mat4 proj;
+uniform mat4 model;
+uniform int rise;
+uniform int t;
+
+float height (float x) {
+	int A = 20;
+	float L = 10.0;
+	float k = 2*3.14/L;
+	float g = 9.81;
+	float c = sqrt(g/k);
+
+	float wave = A*cos(k*(vertex_in_world_space.x - c*t)); 
+	return wave + rise;
+}
+
+void main(){
+	text_coord = vertex_texture; 
+	vertex_in_world_space = vec3(model * vec4 (vertex_position, 1.0));
+	 
+	mat4 model_view_matrix = view * model;
+	mat3 normal_matrix = mat3(model_view_matrix);
+
+	float y = height(vertex_in_world_space.x);
+
+	float height1 = height(vertex_in_world_space.x-1);
+    float height2 = height(vertex_in_world_space.x+1);
+    vec3 normal =  normalize(vec3((height1 - height2),1, 0));
+
+	// Convert to eye space
+	tnorm = normalize(normal_matrix * normal);
+
+	gl_Position =  proj * view * vec4 (vertex_in_world_space.x, y, vertex_in_world_space.z, 1.0);
+}

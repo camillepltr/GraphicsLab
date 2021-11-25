@@ -53,6 +53,7 @@ public:
 
 	// Public methods
 	void Draw(Shader turtle_shader, mat4 ground_model);
+	void MoveBodyParts(float t);
 		// For boids
 	void MoveToNextBoidPosition(Turtle** crowd, int n, float delta);
 private:
@@ -61,6 +62,7 @@ private:
 	vec3 separation(Turtle** crowd, int n); // Reynold rule 1 : Seperation
 	vec3 alignment(Turtle** crowd, int n); // Reynold rule 2 : Alignment
 	vec3 cohesion(Turtle** crowd, int n); // Reynold rule 3 : Cohesion
+	vec3 seekPlace(vec3 target); // Additional rule : tend toowards a particultar place
 	bool isInVisualRange(Turtle* t);
 	int direction(vec3 v1, vec3 v2);
 };

@@ -29,9 +29,11 @@ using namespace glm;
 int width = 1000.0;
 int height = 750.0;
 bool key_states[256];
+bool animation = true;
 
 // Shaders
 Shader shader_with_texture;
+Shader sea_shader;
 Shader skybox_shader;
 
 #define GROUND_MESH_NAME "../Meshes/island.dae"
@@ -68,6 +70,7 @@ Light orange_light;
 Material material; // Same for all for now, to adapt (ex : highest phong exponennt for turtle shell)
 
 
+//Mostly used for mid-term
 void updateModels(float delta) {
 	// Translations
 	if (key_states['e']) {
@@ -172,17 +175,22 @@ void updateModels(float delta) {
 	}
 }
 
-void updateProjection() {
+void updateParams() {
 	// Swithcing between otho and perspective projection
 	if (key_states['p']) {
 		perpective_proj = !perpective_proj;
+	}
+
+	// Activate turtles animation
+	if (key_states['m']) {
+		animation = !animation;
 	}
 }
 
 mat4 computeProjectionMatrix(){
 	mat4 proj = mat4(1.0f);
 	if (perpective_proj) {
-		proj = perspective(45.0f, (float)width / (float)height, 0.1f, 1000.0f);
+		proj = perspective(45.0f, (float)width / (float)height, 0.1f, 2000.0f);
 	}
 	else {
 		proj = ortho(0.0, 10.0, 0.0, 10.0, 0.1, 100.0);
@@ -235,9 +243,10 @@ void display(){
 	mat4 sea_model = sea.GetModelLocalTransformationMatrix();
 	shader_with_texture.SetUniformMat4("model", sea_model);
 	shader_with_texture.SetMaterial(sea.GetMaterial());
-	shader_with_texture.SetUniformVec4("object_color", vec4(1.0, 1.0, 1.0, 0.8));
+	shader_with_texture.SetUniformVec4("object_color", vec4(1.0, 1.0, 1.0, 0.7));
 	glBindTexture(GL_TEXTURE_2D, sea.GetTexture());
 	glDrawArrays(GL_TRIANGLES, 0, sea.GetMeshData().mPointCount);
+
 
 	// Skybox
 	glDepthMask(GL_FALSE);
@@ -266,12 +275,17 @@ void updateScene() {
 	last_time = curr_time;
 
 	camera.UpdateCamera(key_states, delta); //View
-	updateModels(delta); // Update model transformation variables
-	for (int i = 0; i < crowd_size; i++) {
-		turtles[i]->MoveToNextBoidPosition(turtles, crowd_size, delta);
-	}
-	updateProjection(); //If switch between ortho/perspective
+	updateModels(delta); // Update model transformation variables (mostly used for mid-term)
+	updateParams(); 
 
+	if (animation) {
+		for (int i = 0; i < crowd_size; i++) {
+			turtles[i]->MoveToNextBoidPosition(turtles, crowd_size, delta);
+			turtles[i]->MoveLegs(curr_time); //Just for animation
+		}
+		sea.translation_vec.y += delta;;
+	}
+		
 	// Draw the next frame
 	glutPostRedisplay();
 }
@@ -291,12 +305,12 @@ void mouseMove(int x, int y)
 
 void init()
 {
-	// SHaders
+	// Shaders
 	shader_with_texture = Shader("../Shaders/vertexShaderWithTexture.txt", "../Shaders/fragmentShaderWithTexture2Lights.txt");
 	skybox_shader = Shader("../Shaders/skyboxVertexShader.txt", "../Shaders/skyboxFragmentShader.txt");
 
 	// Skybox 
-	skybox = Skybox(FACES_TEXTURE_NAMES, skybox_shader.GetID(), 550);
+	skybox = Skybox(FACES_TEXTURE_NAMES, skybox_shader.GetID(), 1000);
 
 	// Ground
 	ground = Model(GROUND_MESH_NAME, shader_with_texture.GetID(), "../Textures/sand_texture.jpg");
@@ -304,11 +318,13 @@ void init()
 
 	// Sea
 	sea = Model(SEA_MESH_NAME, shader_with_texture.GetID(), "../Textures/sea_texture.jpg");
+	sea.translation_vec.y -= 20;
 
 	// Turtles
 	crowd_size = 12;
 	turtles = new Turtle* [crowd_size];
 	turtles[0] = new Turtle(shader_with_texture);
+	turtles[0]->shell.rotation_vec.y = -PI/2.0;
 
 	for (int i = 1; i < crowd_size; i++) {
 		// Make copies of the first turtle (boid) and put them in a different location
@@ -318,6 +334,13 @@ void init()
 		turtles[i]->shell.translation_vec.z += rand() % 500 - 250;
 	}
 
+	for (int i = 0; i < 0.7 * crowd_size; i++) {
+		// Make some of the turles different
+		turtles[i]->shell.scale_vec *= 1.15;
+		turtles[i]->shell.SetMaterial(0.2, 0.5, 2.0, 50.0);
+		turtles[i]->la.SetMaterial(0.8, 0.8, 2.0, 90.0);
+	}
+
 
 
 	camera = Camera(width, height, width / 2, height / 2, 100); // View
@@ -325,13 +348,13 @@ void init()
 		vec3(0.5, 0.5, 0.5),
 		vec3(1.0, 1.0, 1.0),
 		vec3(0.5, 0.5, 0.5),
-		vec3(10.0, 10.0, 4.0) // Position
+		vec3(600.0, 100.0, -600) // Position
 	};
 	orange_light = Light{
 		vec3(0.5, 0.25, 0.1),
 		vec3(1.0, 0.5, 0.2),
 		vec3(1.0, 0.5, 0.2),
-		vec3(-100.0, 50.0, 4.0) // Position
+		vec3(-800.0, 100.0, -800) // Position
 	};
 }
 
