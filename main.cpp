@@ -60,6 +60,11 @@ Model sea;
 #define SEA_MESH_NAME "../Meshes/sea.dae"
 Turtle** turtles; // Array of turtles = crowd
 int crowd_size;
+Model** rocks;
+int nb_rocks;
+#define ROCK_MESH_NAME "../Meshes/rock.dae"
+Model plant;
+#define PLANT_MESH_NAME "../Meshes/plant.dae"
 
 // View
 Camera camera;
@@ -199,10 +204,10 @@ mat4 computeProjectionMatrix(){
 	return proj;
 }
 
-void display(){
+void display() {
 
 	// tell GL to only draw onto a pixel if the shape is closer to the viewer
-	glEnable(GL_DEPTH_TEST); 
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_CUBE_MAP);
 	glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -233,6 +238,26 @@ void display(){
 	shader_with_texture.SetMaterial(ground.GetMaterial());
 	glBindTexture(GL_TEXTURE_2D, ground.GetTexture());
 	glDrawArrays(GL_TRIANGLES, 0, ground.GetMeshData().mPointCount);
+
+	// ROCKS
+	shader_with_texture.SetMaterial(rocks[0]->GetMaterial());
+	glBindTexture(GL_TEXTURE_2D, rocks[0]->GetTexture());
+	for (int i = 0; i < nb_rocks; i++)
+	{
+		glBindVertexArray(rocks[i]->GetVao());
+		mat4 ground_model = rocks[i]->GetModelLocalTransformationMatrix(); //mat4 M = T * R * S;
+		shader_with_texture.SetUniformMat4("model", ground_model);
+		glDrawArrays(GL_TRIANGLES, 0, rocks[i]->GetMeshData().mPointCount);
+	}
+
+	// PLANT
+	glBindVertexArray(plant.GetVao());
+	mat4 plant_model = plant.GetModelLocalTransformationMatrix();
+	shader_with_texture.SetUniformMat4("model", plant_model);
+	shader_with_texture.SetMaterial(plant.GetMaterial());
+	glBindTexture(GL_TEXTURE_2D, plant.GetTexture());
+	glDrawArrays(GL_TRIANGLES, 0, plant.GetMeshData().mPointCount);
+
 
 	// TURTLES
 	for(int i = 0; i < crowd_size; i++) {
@@ -281,10 +306,10 @@ void updateScene() {
 
 	if (animation) {
 		for (int i = 0; i < crowd_size; i++) {
-			turtles[i]->MoveToNextBoidPosition(turtles, crowd_size, delta);
+			turtles[i]->MoveToNextBoidPosition(turtles, crowd_size, rocks, nb_rocks, plant.translation_vec, delta);
 			turtles[i]->MoveBodyParts(curr_time); //Just for animation
 		}
-		sea.translation_vec.y += delta;;
+		sea.translation_vec.y += delta;
 	}
 		
 	// Draw the next frame
@@ -317,6 +342,25 @@ void init()
 	ground = Model(GROUND_MESH_NAME, shader_with_texture.GetID(), "../Textures/sand_texture.jpg");
 	ground.SetMaterial(0.6, 0.9, 1.8, 100.0);
 
+	// Rocks
+	nb_rocks = 20;
+	rocks = new Model* [nb_rocks];
+	rocks[0] = new Model(ROCK_MESH_NAME, shader_with_texture.GetID(), "../Textures/rock_texture.jpg");
+	rocks[0]->translation_vec.z -= 30;
+	for (int i = 1; i < nb_rocks; i++) {
+		// Make copies of the first rock
+		rocks[i] = new Model(*rocks[0]);
+		// Put them in random location + rotate them
+		rocks[i]->translation_vec.x += rand() % 700 - 600;
+		rocks[i]->translation_vec.z += rand() % 900 - 350;
+		rocks[i]->rotation_vec.y += rand() % 10;
+	}
+
+	// Plant
+	plant = Model(PLANT_MESH_NAME, shader_with_texture.GetID(), "../Textures/plant_texture.jpg");
+	plant.translation_vec = vec3(-700.0, 0.0, -100.0);
+
+
 	// Sea
 	sea = Model(SEA_MESH_NAME, shader_with_texture.GetID(), "../Textures/sea_texture.jpg");
 	sea.translation_vec.y -= 20;
@@ -332,7 +376,7 @@ void init()
 		turtles[i] = new Turtle(*turtles[0]);
 		// Using translation vector for position (= origin (0,0,0) + translation defined by translation_vector)
 		turtles[i]->shell.translation_vec.x += rand() % 500 - 250;
-		turtles[i]->shell.translation_vec.z += rand() % 500 - 250;
+		turtles[i]->shell.translation_vec.z += rand() % 600 - 300;
 	}
 
 	for (int i = 0; i < 0.7 * crowd_size; i++) {

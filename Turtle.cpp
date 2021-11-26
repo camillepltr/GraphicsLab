@@ -48,25 +48,27 @@ Turtle::Turtle(const Turtle& t) {
 }
 
 // Other public methods
-void Turtle::MoveToNextBoidPosition(Turtle** crowd, int n, float delta) {
+void Turtle::MoveToNextBoidPosition(Turtle** crowd, int crowd_size, Model** obstacles, int nb_obstacles, vec3 target, float delta) {
 	vec3 initial = *position;
 	// 3 rules
-	vec3 v1 = separation(crowd, n);
-	vec3 v2 = cohesion(crowd, n);
-	vec3 v3 = alignment(crowd, n);
+	vec3 v1 = separation(crowd, crowd_size);
+	vec3 v2 = cohesion(crowd, crowd_size);
+	vec3 v3 = alignment(crowd, crowd_size);
 	// Additional 
-	vec3 v4 = seekPlace(vec3(-800.0 + rand() % 40, 0.0, rand() % 100));
+	vec3 v4 = seekPlace(target);
+	vec3 v5 = avoidObstacles(obstacles, nb_obstacles);
 
-	velocity += v1 + v2 + v3 + v4;
+	velocity += v1 + v2 + v3 + v4 + v5;
 	// Check if not above max speed
 	if (length(velocity) > MAX_SPEED) {
 		velocity /= length(velocity);
 		velocity *= MAX_SPEED;
 	}
-	*position += velocity * delta;
 
-	// Rotate around y axis (as turtle move on (x,z) plane, in the direction of the velocit
-	//shell.rotation_vec.y += direction(initial, *position) * delta;
+	// Update postion and orientation
+	*position += velocity * delta;
+	//adjustOrientation(initial, *position, delta);
+
 }
 
 void Turtle::MoveBodyParts(float t) {
@@ -136,7 +138,7 @@ void Turtle::Draw(Shader turtle_shader, mat4 ground_model) {
 vec3 Turtle::separation(Turtle** crowd, int n) {
 	vec3 res = vec3(0, 0, 0);
 	for (int i = 0; i < n; i++) {
-		if ((crowd[i] != this) && (distance(*crowd[i]->position, *position) < MAX_DISTANCE_BETWEEN_BOIDS)) {
+		if ((crowd[i] != this) && (distance(*crowd[i]->position, *position) < SAFETY_DISTANCE)) {
 			res -= (*crowd[i]->position - *position);
 		}
 	}
@@ -189,7 +191,17 @@ vec3 Turtle::alignment(Turtle** crowd, int n) {
 
 vec3 Turtle::seekPlace(vec3 target) {
 	vec3 res = target - *position;
-	res *= 0.8; //Limit the weight 
+	res *= 0.01; //Limit the weight 
+	return res;
+}
+
+vec3 Turtle::avoidObstacles(Model** obstacles, int n) {
+	vec3 res = vec3(0, 0, 0);
+	for (int i = 0; i < n; i++) {
+		if (distance(obstacles[i]->translation_vec, *position) < SAFETY_DISTANCE) {
+			res -= (obstacles[i]->translation_vec - *position);
+		}
+	}
 	return res;
 }
 
@@ -197,23 +209,9 @@ bool Turtle::isInVisualRange(Turtle* t) {
 	return (distance(*position, *t->position) < VISUAL_RANGE);
 }
 
-int Turtle::direction(vec3 v1, vec3 v2) {
-	float cos = (float)dot(v1, v2);
-	cout << cos << endl;
-	if (cos == 1) {
-		//Same direction : dont turn
-		return 0;
-	}
-	else if (cos == -1) {
-		// Opposite direction : doesn't matter, lets say turn in positive direction
-		return 0;
-	}
-	// Else Return sign of cross product
-	vec3 cross_p = cross(v1, v2);
-	if (cross_p.y > 0) {
-		return 1;
-	}
-	else {
-		return -1;
-	}
+void Turtle::adjustOrientation(vec3 v1, vec3 v2, float delta) {
+	float angle = degrees(orientedAngle(normalize(vec2(v2.x - v1.x, v2.z - v1.z)), vec2(0.0 , 1.0)));
+	cout << angle << endl;
+	if (angle > degrees(shell.rotation_vec.y)) shell.rotation_vec.y -= delta;
+	if (angle < degrees(shell.rotation_vec.y)) shell.rotation_vec.y += delta;
 }
