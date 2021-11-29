@@ -72,8 +72,8 @@ void Turtle::MoveToNextBoidPosition(Turtle** crowd, int crowd_size, Model** obst
 }
 
 void Turtle::MoveBodyParts(float t) {
-	la.rotation_vec.y = (sin(t*0.002f) - 2) / 10;
-	ra.rotation_vec.y = (sin(t * 0.002f + PI) - 2) / 10;
+	la.rotation_vec.y = (sin(t*0.003f) - 2) / 10;
+	ra.rotation_vec.y = (sin(t * 0.03f + PI) - 2) / 10;
 	ll.rotation_vec.y = (cos(t * 0.004f + PI) - 2) / 10;
 	rl.rotation_vec.y = (cos(t * 0.004f) - 2) / 10;
 	head.rotation_vec.x = (cos(t * 0.001f) - 2) / 20;

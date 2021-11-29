@@ -70,19 +70,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Meshes\blender_tryout.dae">
-      <Filter>Fichiers de ressources\Meshes</Filter>
-    </None>
-    <None Include="Meshes\monkeyhead_smooth.dae">
-      <Filter>Fichiers de ressources\Meshes</Filter>
-    </None>
     <None Include="Meshes\tree.dae">
       <Filter>Fichiers de ressources\Meshes</Filter>
     </None>
     <None Include="Meshes\turtle.dae">
-      <Filter>Fichiers de ressources\Meshes</Filter>
-    </None>
-    <None Include="Meshes\ground.dae">
       <Filter>Fichiers de ressources\Meshes</Filter>
     </None>
     <None Include="Meshes\turtle_shell.dae">
@@ -98,6 +89,15 @@
       <Filter>Fichiers de ressources\Meshes</Filter>
     </None>
     <None Include="Meshes\turtle_right_leg.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\island.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\rock.dae">
+      <Filter>Fichiers de ressources\Meshes</Filter>
+    </None>
+    <None Include="Meshes\sea.dae">
       <Filter>Fichiers de ressources\Meshes</Filter>
     </None>
   </ItemGroup>
@@ -123,12 +123,42 @@
     <Text Include="Shaders\skyboxVertexShader.txt">
       <Filter>Fichiers de ressources\Shaders</Filter>
     </Text>
-    <Text Include="Shaders\seaVertexShader.txt">
-      <Filter>Fichiers de ressources\Shaders</Filter>
-    </Text>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Textures\bin_texture.jpg">
+    <Image Include="Textures\plant_texture.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\rock_texture.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\sand_texture.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\sea_texture.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\shell_texture.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\skin_texture.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\Skybox\back.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\Skybox\bottom.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\Skybox\front.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\Skybox\left.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\Skybox\right.jpg">
+      <Filter>Fichiers de ressources\Textures</Filter>
+    </Image>
+    <Image Include="Textures\Skybox\top.jpg">
       <Filter>Fichiers de ressources\Textures</Filter>
     </Image>
   </ItemGroup>

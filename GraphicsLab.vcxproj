@@ -163,9 +163,9 @@
     <ClInclude Include="Turtle.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Meshes\blender_tryout.dae" />
-    <None Include="Meshes\ground.dae" />
-    <None Include="Meshes\monkeyhead_smooth.dae" />
+    <None Include="Meshes\island.dae" />
+    <None Include="Meshes\rock.dae" />
+    <None Include="Meshes\sea.dae" />
     <None Include="Meshes\tree.dae" />
     <None Include="Meshes\turtle.dae" />
     <None Include="Meshes\turtle_shell.dae" />
@@ -177,7 +177,6 @@
   <ItemGroup>
     <Text Include="Shaders\fragmentShaderWithTexture.txt" />
     <Text Include="Shaders\fragmentShaderWithTexture2Lights.txt" />
-    <Text Include="Shaders\seaVertexShader.txt" />
     <Text Include="Shaders\simpleVertexShader.txt" />
     <Text Include="Shaders\simpleFragmentShader.txt" />
     <Text Include="Shaders\skyboxFragmentShader.txt" />
@@ -185,7 +184,18 @@
     <Text Include="Shaders\vertexShaderWithTexture.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Textures\bin_texture.jpg" />
+    <Image Include="Textures\plant_texture.jpg" />
+    <Image Include="Textures\rock_texture.jpg" />
+    <Image Include="Textures\sand_texture.jpg" />
+    <Image Include="Textures\sea_texture.jpg" />
+    <Image Include="Textures\shell_texture.jpg" />
+    <Image Include="Textures\skin_texture.jpg" />
+    <Image Include="Textures\Skybox\back.jpg" />
+    <Image Include="Textures\Skybox\bottom.jpg" />
+    <Image Include="Textures\Skybox\front.jpg" />
+    <Image Include="Textures\Skybox\left.jpg" />
+    <Image Include="Textures\Skybox\right.jpg" />
+    <Image Include="Textures\Skybox\top.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

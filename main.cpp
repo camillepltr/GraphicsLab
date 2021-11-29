@@ -54,17 +54,17 @@ vector<const char*> FACES_TEXTURE_NAMES =
 };
 
 // Models
-Model ground;
 #define GROUND_MESH_NAME "../Meshes/island.dae"
-Model sea;
 #define SEA_MESH_NAME "../Meshes/sea.dae"
-Turtle** turtles; // Array of turtles = crowd
-int crowd_size;
-Model** rocks;
-int nb_rocks;
 #define ROCK_MESH_NAME "../Meshes/rock.dae"
-Model plant;
 #define PLANT_MESH_NAME "../Meshes/plant.dae"
+Model ground;
+Model sea;
+Turtle** turtles; // Array of turtles = crowd
+Model** rocks;
+Model plant;
+int crowd_size;
+int nb_rocks;
 
 // View
 Camera camera;
@@ -182,12 +182,12 @@ void updateModels(float delta) {
 }
 
 void updateParams() {
-	// Swithcing between otho and perspective projection
+	// Swithcing between otho and perspective projection (mid term)
 	if (key_states['p']) {
 		perpective_proj = !perpective_proj;
 	}
 
-	// Activate turtles animation
+	// Activate turtles and sea animation
 	if (key_states['m']) {
 		animation = !animation;
 	}
@@ -205,7 +205,6 @@ mat4 computeProjectionMatrix(){
 }
 
 void display() {
-
 	// tell GL to only draw onto a pixel if the shape is closer to the viewer
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_CUBE_MAP);
@@ -269,7 +268,7 @@ void display() {
 	mat4 sea_model = sea.GetModelLocalTransformationMatrix();
 	shader_with_texture.SetUniformMat4("model", sea_model);
 	shader_with_texture.SetMaterial(sea.GetMaterial());
-	shader_with_texture.SetUniformVec4("object_color", vec4(1.0, 1.0, 1.0, 0.7));
+	shader_with_texture.SetUniformVec4("object_color", vec4(1.0, 1.0, 1.0, 0.6));
 	glBindTexture(GL_TEXTURE_2D, sea.GetTexture());
 	glDrawArrays(GL_TRIANGLES, 0, sea.GetMeshData().mPointCount);
 
@@ -379,8 +378,8 @@ void init()
 		turtles[i]->shell.translation_vec.z += rand() % 600 - 300;
 	}
 
+	// Make some of the turles different
 	for (int i = 0; i < 0.7 * crowd_size; i++) {
-		// Make some of the turles different
 		turtles[i]->shell.scale_vec *= 1.15;
 		turtles[i]->shell.SetMaterial(0.2, 0.5, 2.0, 50.0);
 		turtles[i]->la.SetMaterial(0.8, 0.8, 2.0, 90.0);

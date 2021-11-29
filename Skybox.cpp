@@ -9,7 +9,9 @@
 
 #include "Skybox.h"
 
+// Constructors 
 Skybox::Skybox() {}
+
 Skybox::Skybox(vector<const char*> faces_paths, GLuint shaderProgramID, int size) {
     size = size;
     for (int i = 0; i < 108; i++) {
@@ -20,6 +22,7 @@ Skybox::Skybox(vector<const char*> faces_paths, GLuint shaderProgramID, int size
     loadCubemap();
 }
 
+// Other public methods
 GLuint Skybox::GetSkyboxTexture() {
     return skybox_texture;
 }
@@ -28,6 +31,7 @@ GLuint Skybox::GetSkyboxVAO() {
     return vao;
 }
 
+// Private methods
 void Skybox::generateObjectBuffer(GLuint shaderProgramID) {
     GLuint vbo;
     glGenBuffers(1, &vbo);
