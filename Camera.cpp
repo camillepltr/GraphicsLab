@@ -21,7 +21,7 @@ Camera::Camera(int w, int h, float init_x, float init_y, int t) {
 
 // Public methods
 void Camera::UpdateCamera(bool key_states[], float delta) {
-	float speed = 50.0f * delta;
+	float speed = 30.0f * delta;
 	if (key_states['w']) { // Dolly in (move forward)
 		camera_pos += speed * camera_front;
 	}

@@ -4,7 +4,7 @@
 	2021
 	-------------------
 	Struct.h
-	Various struc used in the project
+	Various struct used in the project
 ********************************************************************************************/
 
 #pragma once

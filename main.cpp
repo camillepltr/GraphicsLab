@@ -308,7 +308,7 @@ void updateScene() {
 			turtles[i]->MoveToNextBoidPosition(turtles, crowd_size, rocks, nb_rocks, plant.translation_vec, delta);
 			turtles[i]->MoveBodyParts(curr_time); //Just for animation
 		}
-		sea.translation_vec.y += delta;
+		sea.translation_vec.y += 0.3*delta;
 	}
 		
 	// Draw the next frame
