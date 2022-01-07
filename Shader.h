@@ -27,7 +27,11 @@ using namespace glm;
 class Shader
 {
 public:
-    // Public methods
+    // Constructors
+    Shader();
+    Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
+
+    // Other public methods
     void Use();
     GLuint GetID();
     GLint GetUniformLocation(string uniformName) const;
@@ -39,18 +43,14 @@ public:
     void SetLight(string uniformName, Light l) const;
     void SetMaterial(Material m) const;
 
-    // Constructors
-    Shader(); // Default constructor
-    Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
-
 private:
     // Private attributes
     GLuint shaderProgramID = 0;
 
     // Private methods
-    static char* readShaderFile(const char* path);
-    static void addShader(GLuint ShaderProgram, const char* shaderText, GLenum ShaderType);
-    GLuint compileShaders(const char* vertexShaderPath, const char* fragmentShaderPath);
+    static char* readShaderFile(const char* path); // Read and return the content of the file 
+    static void addShader(GLuint ShaderProgram, const char* shaderText, GLenum ShaderType); // Compile a shader and attach it to the shader program
+    GLuint compileShaders(const char* vertexShaderPath, const char* fragmentShaderPath); // Compile vertex and frament shaders and link the shader program
 };
 
 #endif

@@ -19,9 +19,10 @@ Camera::Camera(int w, int h, float init_x, float init_y, int t) {
 	int tol = t;
 }
 
-// Public methods
+// Other public methods
 void Camera::UpdateCamera(bool key_states[], float delta) {
 	float speed = 30.0f * delta;
+	// Note: the choice of the keys makes sense on an AZERTY keyboard
 	if (key_states['w']) { // Dolly in (move forward)
 		camera_pos += speed * camera_front;
 	}
@@ -83,6 +84,7 @@ vec3 Camera::GetUp() {
 // Private methods
 vec3 Camera::computeCameraFront() {
 	vec3 front;
+	// Basic trigonometry
 	front.x = cos(radians(yaw_angle)) * cos(radians(pitch_angle));
 	front.y = sin(radians(pitch_angle));
 	front.z = sin(radians(yaw_angle)) * cos(radians(pitch_angle));

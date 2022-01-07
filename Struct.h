@@ -19,6 +19,7 @@ struct ModelData
 	std::vector<glm::vec2> mTextureCoords;
 };
 
+// To modelize a light source
 struct Light {
 	glm::vec3 ambient_colour = glm::vec3(0.5, 0.5, 0.5);
 	glm::vec3 diffuse_colour = glm::vec3(1.0, 1.0, 1.0);
@@ -26,10 +27,10 @@ struct Light {
 	glm::vec3 position = glm::vec3(10.0, 10.0, 4.0);
 };
 
-
+// MAterial properties, used to compute the Phong illumination
 struct Material {
-	float Ka = 0.8;
-	float Kd = 1.0;
-	float Ks = 1.8;
+	float Ka = 0.8; // ambient reflectance
+	float Kd = 1.0; // diffuse reflectance
+	float Ks = 1.8; // specular reflectance
 	float phong_exponent = 80.0; // shininess
 };

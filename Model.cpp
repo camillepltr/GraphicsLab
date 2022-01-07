@@ -26,9 +26,18 @@ Model::Model(const char* file_name, GLuint shaderProgramID, vec3 trans, vec3 rot
 	scale_vec = scale;
 }
 
-// Public methods
+Model::Model(const Model& m) {
+	translation_vec = m.translation_vec;
+	rotation_vec = m.rotation_vec;
+	scale_vec = m.scale_vec;
+	mesh_data = m.mesh_data;
+	vao = m.vao;
+	texture = m.texture;
+	material = m.material;
+}
+
+// Other public methods
 mat4 Model::GetModelLocalTransformationMatrix() {
-	// Compute a transformation matrix M = T*R*S
 	mat4 translationMat = translate(mat4(1.0f), translation_vec);
 	mat4 rotationMatX = rotate(mat4(1.0f), rotation_vec.x, vec3(1.0f, 0.0f, 0.0f));
 	mat4 rotationMatY = rotate(mat4(1.0f), rotation_vec.y, vec3(0.0f, 1.0f, 0.0f));

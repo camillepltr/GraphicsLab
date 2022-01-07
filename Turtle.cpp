@@ -49,7 +49,7 @@ Turtle::Turtle(const Turtle& t) {
 
 // Other public methods
 void Turtle::MoveToNextBoidPosition(Turtle** crowd, int crowd_size, Model** obstacles, int nb_obstacles, vec3 target, float delta) {
-	vec3 initial = *position;
+	//vec3 initial = *position;
 	// 3 rules
 	vec3 v1 = separation(crowd, crowd_size);
 	vec3 v2 = cohesion(crowd, crowd_size);
@@ -67,7 +67,7 @@ void Turtle::MoveToNextBoidPosition(Turtle** crowd, int crowd_size, Model** obst
 
 	// Update postion and orientation
 	*position += velocity * delta;
-	//adjustOrientation(initial, *position, delta);
+	//adjustOrientation(initial, *position, delta); 
 
 }
 
@@ -80,8 +80,7 @@ void Turtle::MoveBodyParts(float t) {
 }
 
 void Turtle::Draw(Shader turtle_shader, mat4 ground_model) {
-
-
+	//Note : the hierarchy with the gorund isn't useful anymore, the ground is static.
 	turtle_shader.SetUniformVec4("object_color", shell_colour);
 	turtle_shader.SetMaterial(shell.GetMaterial());
 	glBindTexture(GL_TEXTURE_2D, shell.GetTexture());
@@ -89,7 +88,7 @@ void Turtle::Draw(Shader turtle_shader, mat4 ground_model) {
 	glBindVertexArray(shell.GetVao());
 	mat4 turtle_shell_model = shell.GetModelLocalTransformationMatrix();
 
-	// Update local shell model
+	// Draw local shell model
 	turtle_shell_model = ground_model * turtle_shell_model;
 	turtle_shader.SetUniformMat4("model", turtle_shell_model);
 	glDrawArrays(GL_TRIANGLES, 0, shell.GetMeshData().mPointCount);
@@ -98,35 +97,35 @@ void Turtle::Draw(Shader turtle_shader, mat4 ground_model) {
 	turtle_shader.SetMaterial(la.GetMaterial());
 	glBindTexture(GL_TEXTURE_2D, la.GetTexture());
 
-	// Update local la model
+	// Draw local la model
 	glBindVertexArray(la.GetVao());
 	mat4 turtle_la_model = la.GetModelLocalTransformationMatrix();
 	turtle_la_model = ground_model * turtle_shell_model * turtle_la_model;
 	turtle_shader.SetUniformMat4("model", turtle_la_model);
 	glDrawArrays(GL_TRIANGLES, 0, la.GetMeshData().mPointCount);
 
-	// Update local ra model
+	// Draw local ra model
 	glBindVertexArray(ra.GetVao());
 	mat4 turtle_ra_model = ra.GetModelLocalTransformationMatrix();
 	turtle_ra_model = ground_model * turtle_shell_model * turtle_ra_model;
 	turtle_shader.SetUniformMat4("model", turtle_ra_model);
 	glDrawArrays(GL_TRIANGLES, 0, ra.GetMeshData().mPointCount);
 
-	// Update local ll model
+	// Draw local ll model
 	glBindVertexArray(ll.GetVao());
 	mat4 turtle_ll_model = ll.GetModelLocalTransformationMatrix();
 	turtle_ll_model = ground_model * turtle_shell_model * turtle_ll_model;
 	turtle_shader.SetUniformMat4("model", turtle_ll_model);
 	glDrawArrays(GL_TRIANGLES, 0, ll.GetMeshData().mPointCount);
 
-	// Update local rl model
+	// Draw local rl model
 	glBindVertexArray(rl.GetVao());
 	mat4 turtle_rl_model = rl.GetModelLocalTransformationMatrix();
 	turtle_rl_model = ground_model * turtle_shell_model * turtle_rl_model;
 	turtle_shader.SetUniformMat4("model", turtle_rl_model);
 	glDrawArrays(GL_TRIANGLES, 0, rl.GetMeshData().mPointCount);
 
-	// Update local head model
+	// Draw local head model
 	glBindVertexArray(head.GetVao());
 	mat4 turtle_head_model = head.GetModelLocalTransformationMatrix();
 	turtle_head_model = ground_model * turtle_shell_model * turtle_head_model;

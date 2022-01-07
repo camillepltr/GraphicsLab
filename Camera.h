@@ -27,7 +27,7 @@ public:
 	Camera();
 	Camera(int w, int h, float init_x, float init_y, int t);
 
-	// Public methods
+	// Other public methods
 	void UpdateCamera(bool key_states[], float delta);
 	void MouseMove(int x, int y);
 	vec3 GetPosition();
@@ -35,8 +35,8 @@ public:
 	vec3 GetUp();
 
 private:
-	// Attributes 
-	// Default vuew transformation variables
+	// Private Attributes 
+	// Default view transformation variables
 	vec3 camera_pos = vec3(0.0f, 20.0f, 50.0f);
 	vec3 camera_front = vec3(0.0f, 0.0f, -1.0f);
 	vec3 camera_up = vec3(0.0f, 1.0f, 0.0f);

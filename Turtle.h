@@ -55,15 +55,15 @@ public:
 	vec4 shell_colour = vec4(0.5, 0.5, 0.0, 1.0);
 	vec4 body_colour = vec4(0.4, 0.2, 0.0, 1.0);
 
-	vec3* position;
+	vec3* position; // Pointer to shell.translation_vec, more handy to use
 	vec3 velocity;
 
 	// Constructors
 	Turtle(); 
 	Turtle(Shader shader);
-	Turtle(const Turtle &t);
+	Turtle(const Turtle &t); // Copy contructor
 	
-	// Public methods
+	// Other public methods
 	void Draw(Shader turtle_shader, mat4 ground_model);
 	void MoveBodyParts(float t);
 	void MoveToNextBoidPosition(Turtle** crowd, int crowd_size, Model** obstacles, int nb_obstacles, vec3 target, float delta);
@@ -76,7 +76,7 @@ private:
 	vec3 seekPlace(vec3 target); // Additional rule : tend toowards a particultar place
 	vec3 avoidObstacles(Model** obstacles, int n); // Additional rule : avoid obstacles (basically the same thing as for the Separation rule but by looking at other obejcts
 	bool isInVisualRange(Turtle* t);
-	void adjustOrientation(vec3 v1, vec3 v2, float delta);
+	void adjustOrientation(vec3 v1, vec3 v2, float delta); //unused
 };
 
 #endif

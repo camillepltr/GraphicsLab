@@ -49,6 +49,7 @@ void Skybox::generateObjectBuffer(GLuint shaderProgramID) {
 bool Skybox::loadCubemapFace(GLuint texture, GLenum side_target, const char* file_name) {
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
+    // load texture from image
     int width, height, nrChannels;
     unsigned char* data = stbi_load(file_name, &width, &height, &nrChannels, 4);
     if (!data) {
@@ -57,7 +58,9 @@ bool Skybox::loadCubemapFace(GLuint texture, GLenum side_target, const char* fil
         return false;
     }
 
+    // generate 2D texture
     glTexImage2D(side_target, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
     stbi_image_free(data);
     return true;
 }
@@ -78,6 +81,7 @@ void Skybox::loadCubemap() {
     loadCubemapFace(skybox_texture, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, faces[4]);
     loadCubemapFace(skybox_texture, GL_TEXTURE_CUBE_MAP_POSITIVE_X, faces[5]);
 
+    // set texture parameters
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);

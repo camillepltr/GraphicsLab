@@ -78,6 +78,7 @@ Light orange_light;
 
 //Mostly used for mid-term
 void updateModels(float delta) {
+	// Note: the choice of the keys makes sense on an AZERTY keyboard
 	// Translations
 	if (key_states['e']) {
 		turtles[0]->shell.translation_vec.z -= 10.0f*delta;
@@ -181,8 +182,9 @@ void updateModels(float delta) {
 	}
 }
 
+// Projection type + activation of animation
 void updateParams() {
-	// Swithcing between otho and perspective projection (mid term)
+	// Swithcing between orthogonal and perspective projection (mid term)
 	if (key_states['p']) {
 		perpective_proj = !perpective_proj;
 	}
@@ -204,6 +206,7 @@ mat4 computeProjectionMatrix(){
 	return proj;
 }
 
+// Rendering loop
 void display() {
 	// tell GL to only draw onto a pixel if the shape is closer to the viewer
 	glEnable(GL_DEPTH_TEST);
@@ -218,9 +221,22 @@ void display() {
 
 	glViewport(0, 0, width, height);
 
-	// View and projection (common to models)
+	// View and projection (common to all models)
 	mat4 view = lookAt(camera.GetPosition(), camera.GetPosition() + camera.GetFront(), camera.GetUp());
 	mat4 proj = computeProjectionMatrix();
+
+	// Skybox
+	glDepthMask(GL_FALSE);
+	skybox_shader.Use();
+	mat4 view2 = mat4(mat3(view)); // Remove the translation part so that it always seems far away (= skybox always centerd around viewer)
+	skybox_shader.SetUniformMat4("view", view2);
+	skybox_shader.SetUniformMat4("proj", proj);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetSkyboxTexture());
+	glBindVertexArray(skybox.GetSkyboxVAO());
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDepthMask(GL_TRUE);
+
 
 	shader_with_texture.Use();
 	shader_with_texture.SetUniformMat4("view", view);
@@ -252,7 +268,7 @@ void display() {
 	// PLANT
 	glBindVertexArray(plant.GetVao());
 	mat4 plant_model = plant.GetModelLocalTransformationMatrix();
-	shader_with_texture.SetUniformMat4("model", plant_model);
+	shader_with_texture.SetUniformMat4("model", plant_model); //mat4 M = T * R * S;
 	shader_with_texture.SetMaterial(plant.GetMaterial());
 	glBindTexture(GL_TEXTURE_2D, plant.GetTexture());
 	glDrawArrays(GL_TRIANGLES, 0, plant.GetMeshData().mPointCount);
@@ -265,29 +281,17 @@ void display() {
 
 	// SEA
 	glBindVertexArray(sea.GetVao());
-	mat4 sea_model = sea.GetModelLocalTransformationMatrix();
+	mat4 sea_model = sea.GetModelLocalTransformationMatrix(); //mat4 M = T * R * S;
 	shader_with_texture.SetUniformMat4("model", sea_model);
 	shader_with_texture.SetMaterial(sea.GetMaterial());
-	shader_with_texture.SetUniformVec4("object_color", vec4(1.0, 1.0, 1.0, 0.6));
+	shader_with_texture.SetUniformVec4("object_color", vec4(1.0, 1.0, 1.0, 0.6)); // Particular value alpha=0.6 for transparency
 	glBindTexture(GL_TEXTURE_2D, sea.GetTexture());
 	glDrawArrays(GL_TRIANGLES, 0, sea.GetMeshData().mPointCount);
-
-
-	// Skybox
-	glDepthMask(GL_FALSE);
-	skybox_shader.Use();
-	view = mat4(mat3(view)); // Remove the translation part so that it always seems far away (= skybox always centerd around viewer)
-	skybox_shader.SetUniformMat4("view", view);
-	skybox_shader.SetUniformMat4("proj", proj);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.GetSkyboxTexture());
-	glBindVertexArray(skybox.GetSkyboxVAO());
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glDepthMask(GL_TRUE);
 
 	glutSwapBuffers();
 }
 
+// Update loop
 void updateScene() {	
 
 	// Wait until at least 16ms passed since start of last frame (Effectively caps framerate at ~60fps)
@@ -300,8 +304,8 @@ void updateScene() {
 	last_time = curr_time;
 
 	camera.UpdateCamera(key_states, delta); //View
-	updateModels(delta); // Update model transformation variables (mostly used for mid-term)
-	updateParams(); 
+	updateModels(delta); // Update model transformation variables (mostly used for mid-term to move and scale the first turtle)
+	updateParams(); // Projection type + activation of the animation
 
 	if (animation) {
 		for (int i = 0; i < crowd_size; i++) {
@@ -328,6 +332,7 @@ void mouseMove(int x, int y)
 	camera.MouseMove(x, y);
 }
 
+// Initialization of the shaders, models, camera, light sources
 void init()
 {
 	// Shaders
@@ -385,9 +390,10 @@ void init()
 		turtles[i]->la.SetMaterial(0.8, 0.8, 2.0, 90.0);
 	}
 
-
-
+	// Initialize the camera
 	camera = Camera(width, height, width / 2, height / 2, 100); // View
+
+	// 2 light sources
 	light = Light {
 		vec3(0.5, 0.5, 0.5),
 		vec3(1.0, 1.0, 1.0),
@@ -430,6 +436,3 @@ int main(int argc, char** argv){
 	glutMainLoop();
     return 0;
 }
-
-
-

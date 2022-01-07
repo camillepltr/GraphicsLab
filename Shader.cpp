@@ -4,6 +4,7 @@
 	2021
 	-------------------
 	Shader.cpp
+	This class represent a shader program, which has a vertex shader and a fragment shader
 ********************************************************************************************/
 #include "Shader.h"
 
@@ -14,7 +15,7 @@ Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath) {
 	compileShaders(vertexShaderPath, fragmentShaderPath);
 }
 
-// Public methods
+// Other public methods
 void Shader::Use() {
 	glUseProgram(shaderProgramID);
 }

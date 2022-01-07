@@ -23,7 +23,7 @@
 #include "Shader.h"
 #include "Struct.h"
 
-// Assimp includes
+// Assimp includes (to load meshes from .dae files)
 #include <assimp/cimport.h> // scene importer
 #include <assimp/scene.h> // collects data
 #include <assimp/postprocess.h> // various extra operations
@@ -44,10 +44,11 @@ public:
     // Constructors
     Model();
     Model(const char* file_name, GLuint shaderProgramID, const char* texture_file_name = NULL); // Default initial position/rotation/scale, texture optional
-    Model(const char* file_name, GLuint shaderProgramID, vec3 trans, vec3 rot, vec3 scale, const char* texture_file_name);  // With initial position/rotation/scale, texture optional
+    Model(const char* file_name, GLuint shaderProgramID, vec3 trans, vec3 rot, vec3 scale, const char* texture_file_name = NULL);  // With initial position/rotation/scale, texture optional
+    Model(const Model& m); // Copy contructor
 
-    // Public methods
-    mat4 GetModelLocalTransformationMatrix();
+    // Other public methods
+    mat4 GetModelLocalTransformationMatrix(); // Retruns the model matrix ("world matrix") M = T * R * S
     ModelData GetMeshData();
     GLuint GetVao();
     GLuint GetTexture();

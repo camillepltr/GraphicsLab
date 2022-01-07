@@ -32,13 +32,16 @@ using namespace glm;
 class Skybox
 {
 public:
+    // Contructors
     Skybox();
     Skybox(vector<const char*> faces_paths, GLuint shaderProgramID, int size);
 
+    // Other public methods
     GLuint GetSkyboxTexture();
     GLuint GetSkyboxVAO();
 
 private:
+    // Private attributes
     float skybox_vertices[108] = {
       -1.0f,  1.0f, -1.0f,
       -1.0f, -1.0f, -1.0f,
@@ -87,6 +90,7 @@ private:
     GLuint skybox_texture;
     int size = 10;
 
+    // Private methods
     void generateObjectBuffer(GLuint shaderProgramID);
     void loadCubemap();
     bool loadCubemapFace(GLuint texture, GLenum side_target, const char* file_name);
